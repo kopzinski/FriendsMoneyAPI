@@ -15,7 +15,7 @@ config.server = {
 
 // MongoDB settings
 config.mongodb = {
-    dbURI: "mongodb://127.0.0.1:27017/alertaware"
+    dbURI: "mongodb://127.0.0.1:27017/friendsmoney"
 };
 
 // Export configuration object

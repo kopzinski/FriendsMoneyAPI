@@ -5,16 +5,15 @@ var express = require('express'),
     morgan = require('morgan'),
     cors = require('cors'),
     helmet = require('helmet'),
-    multer = require('multer'),
     logger = require('mm-node-logger')(module),
     bodyParser = require('body-parser'),
     methodOverride = require('method-override'), //used to manipulate POST
-    userService = require('../users/users.service'),
-    deviceService = require('../devices/devices.service'),
+
     app  = express(),
     pathUtils      = require('../utils/path-utils');
     const SixMonths = 15778476000;
-
+    
+    
     function initMiddleware(app) {
  // Showing stack errors
     app.set('showStackError', true);
@@ -57,8 +56,7 @@ function initCrossDomain(app) {
     app.use(function(req, res, next) {
         res.set('Access-Control-Allow-Origin', '*');
         res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
-        res.set('Access-Control-Allow-Headers', 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token');
-
+        res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         next();
     });
 }
@@ -68,6 +66,7 @@ function initGonfig(app) {
         require(path.resolve(routePath))(app);
     });
 }
+
 function initRoutes(app) {
    app.use('/api', require('./routes'));
 }
@@ -86,7 +85,6 @@ function init() {
     initGonfig(app);
     initRoutes(app);
     initDB();
-
     return app;
 }
 
