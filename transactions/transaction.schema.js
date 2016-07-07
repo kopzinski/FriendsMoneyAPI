@@ -1,17 +1,17 @@
 /**
- *User Schema 
+ *Transaction Schema 
  * 
  */
 var mongoose = require('mongoose');
  
-var userSchema = mongoose.Schema({
-	phone: String,
-	name: String,
-	registration_id: String,
-	registration_flag: Boolean	
+var transactionSchema = mongoose.Schema({
+	value: Number,
+	status: String,
+	debtor: String,
+	creditor: String	
 });
 
-userSchema.pre('save', function(next){
+transactionSchema.pre('save', function(next){
 //get current date
 var currentDate = new Date();
 
@@ -26,4 +26,4 @@ next();
 
 });
 
-module.exports = mongoose.model('Users', userSchema);
+module.exports = mongoose.model('Transaction', transactionSchema);
