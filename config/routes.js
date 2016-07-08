@@ -4,12 +4,13 @@
  * 
  */
 var express = require('express');
-// var userController = require('../users/users.controller');
+var userController = require('../user/user.controller');
 // var notificationController = require('../notifications/notifications.controller');
 var router = express.Router();
 
 //Users
-// router.get('/users', userController.getListUsers);
+ router.get('/allUsers', userController.getListAllUsers);
+ 
 // router.get('/user/:username', userController.getUser);
 // router.delete('/user/:username', userController.deleteUser);
 // router.put('/user', userController.updateUser);
