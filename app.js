@@ -5,12 +5,7 @@ var pkg     = require('./package.json');
 var config  = require('./config/config');
 var express = require('./config/express');
 var mongodb = require('./config/mongoose');
-var transactionService = require('./transactions/transaction.service');
-var Transaction = require('./transactions/transaction.schema');
 
-transactionService.getListTransactions(391239231284, function(response){
-    console.log(response);
-})
 mongodb(function startServer() {
     var app = express.init();
 
