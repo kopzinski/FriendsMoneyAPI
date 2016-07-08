@@ -1,0 +1,73 @@
+{
+   "error" : {  
+ 
+      "msg_invalid_param"   : {  
+ 
+         "result"   : "error",
+         "message"  : "Invalid request parameters."
+ 
+      },
+ 
+      "msg_empty_param"     : {
+ 
+        "result"    :"error",
+        "message"   :"Parameters should not be empty."
+ 
+      },
+ 
+      "msg_reg_failure"     : {
+ 
+        "result"    :"error",
+        "message"   :"Registration failure."
+ 
+      },
+ 
+      "msg_reg_exists"  : {
+ 
+        "result"    :"error",
+        "message"   :"Transaction already registered."
+ 
+      },
+ 
+      "msg_del_failure" : {
+ 
+         "result" : "error",
+         "message" : "Unable to remove a transaction"
+ 
+      },
+       "msg_find_failure" : {
+ 
+         "result" : "error",
+         "message" : "Unable to find a transaction"
+ 
+      },
+      "msg_no_register" : {
+ 
+         "result" : "error",
+         "message" : "There is no transaction for this user"
+ 
+      },
+      "msg_mongo_error":{
+        "result": "error",
+        "message": "Find an error"
+      }
+ 
+   },
+ 
+   "success" : {
+ 
+      "msg_reg_success" : {
+ 
+        "result"    : "success",
+        "message"   : "Transaction successfully registered."
+ 
+      },
+ 
+        "msg_del_success"  : {
+ 
+         "result" :  "success",
+         "message" : "Transaction successfully removed"
+ 
+        }
+   }
+}

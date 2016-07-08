@@ -7,8 +7,8 @@ var mongoose = require('mongoose');
 var transactionSchema = mongoose.Schema({
 	value: Number,
 	status: String,
-	debtor: String,
-	creditor: String	
+	debtor: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+	creditor: { type: mongoose.Schema.Types.ObjectId, ref: 'User'}	
 });
 
 transactionSchema.pre('save', function(next){
