@@ -8,6 +8,9 @@ var express = require('express');
 // var notificationController = require('../notifications/notifications.controller');
 var router = express.Router();
 
+router.get('/',function(req, res){
+    res.send("Hello World");
+})
 //Users
 // router.get('/users', userController.getListUsers);
 // router.get('/user/:username', userController.getUser);

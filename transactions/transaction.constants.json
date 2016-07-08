@@ -44,7 +44,7 @@
       "msg_no_register" : {
  
          "result" : "error",
-         "message" : "There is no transaction for this user"
+         "message" : "Transaction not find"
  
       },
       "msg_mongo_error":{
@@ -68,6 +68,12 @@
          "result" :  "success",
          "message" : "Transaction successfully removed"
  
-        }
+        },
+        "msg_update_success" : {
+ 
+         "result"    : "success",
+         "message"   : "Transaction successfully updated."
+ 
+      }
    }
 }
