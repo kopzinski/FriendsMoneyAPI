@@ -9,8 +9,11 @@ var userController = require('../user/user.controller');
 var router = express.Router();
 
 //Users
- router.get('/allUsers', userController.getListAllUsers);
- 
+ router.post('/registerUser', userController.registerUser);
+ router.post('/deleteUser', userController.deleteUser);
+ router.post('/user', userController.getUser);
+ router.post('/users', userController.getListAllUsers);
+
 // router.get('/user/:username', userController.getUser);
 // router.delete('/user/:username', userController.deleteUser);
 // router.put('/user', userController.updateUser);
