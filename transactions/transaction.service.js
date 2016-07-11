@@ -28,9 +28,7 @@ module.exports = service;
  */
 function createTransaction(transaction, callback){
     transaction.save(function(err){
-        if (err){
-            callback(constant.error.msg_mongo_error+": "+err)   
-        }
+        if (err){callback({status:500, error: err });}
         else{
              callback(constant.success.msg_reg_success)
         }
@@ -50,11 +48,11 @@ function getListTransactionsByUser (user_id, callback){
         if (err) 
         {
             logger.error(constant.error.msg_mongo_error+": "+err);
-            callback(false);
+            callback({status:500, error: err });
         }else if (transactions[0] == null || transactions[0] == undefined)
         {
-            callback(constant.error.msg_no_register);
-            callback(transactions);
+            logger.error(constant.error.msg_no_register);
+            callback({status:404, error: constant.error.msg_no_register});
         }
         else {
             callback(transactions);
@@ -65,20 +63,20 @@ function getListTransactionsByUser (user_id, callback){
 
 /**
  * This method find all transactions in database
- * the user_id parameter
+ * 
  * @return error or a list with transactions
  */
-function getListTransactionsByUser (user_id, callback){
+function getListTransactions (callback){
 
     Transaction.find({},function(err, transaction){
         if (err) 
         {
             logger.error(constant.error.msg_mongo_error+": "+err);
-            callback(false);
+            callback({status:500, error: err });
         }else if (transaction == null || transaction == undefined)
         {
             callback(constant.error.msg_no_register);
-            callback(transaction);
+            callback( {status:404, error: constant.error.msg_no_register});
         }
         else {
             callback(transaction);
@@ -97,10 +95,10 @@ function getTransaction (id, callback){
         if (err) 
         {
             logger.error(constant.error.msg_mongo_error+": "+err);
-            callback(false);
+            callback({status: 500, error: err });
         }
         else if(transaction == null || transaction == undefined) {
-            callback(constant.msg_no_register);
+            callback({status:404, error: constant.error.msg_no_register});
         }
         else 
         {
@@ -120,14 +118,16 @@ function deleteTransaction(id, callback){
           if (err)
           {
               logger.error(constant.error.msg_mongo_error+": "+err);
-              callback(false);
+               callback({status: 500, error: err });
+          }else if(transaction == null || transaction == undefined) {
+              callback({status:404, error: constant.error.msg_no_register});
           }else 
           {
               transaction.remove(function(err, transaction){
                   if (err)
                   {
                     logger.error(constant.error.msg_mongo_error+": "+err);
-                    callback(false);
+                     callback({status: 500, error: err });
                   }
                   else 
                   {
@@ -149,15 +149,15 @@ function updateTransaction (transaction, callback){
         status:transaction.status, debtor:transaction.debtor, creditor:transaction.creditor}},
         function(err, transactionMongo){
              if (err){
-                    logger.error(constant.error.msg_mongo_error+": "+err);
-                    callback(false);
+                   logger.error(constant.error.msg_mongo_error+": "+err);
+                    callback({status: 500, error: err });
                   }
              if (transactionMongo)
              {
                  callback(constant.success.msg_update_success);
              }
              else {
-                 callback(constant.error.msg_no_register);
+                  callback( {status:404, error: constant.error.msg_no_register});
              }
         })
 }
