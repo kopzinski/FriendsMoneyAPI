@@ -6,49 +6,64 @@ service.getUser = getUser;
 service.getListAllUsers = getListAllUsers;
 service.deleteUser = deleteUser;
 service.registerUser = registerUser;
+module.exports = service;
 
 function getUser (user, callback){
 	var phone = user.phone;
-    console.log("Telefone: "+phone);
-    User.findOne({ phone: phone }, function(err, user) {
-        if (err) callback(err);
-        if (user == null){
-            callback(null);
-        }else {
-            callback(user);
-        }
-    });
+	if(phone){		
+		User.findOne({ phone: phone }, function(err, user) {
+			if (err) callback(err);
+			if (user == null){
+				callback("Não há usuário com esse telefone");
+			}else {
+				callback(user);
+			}
+		});
+	}else{
+		callback("Não há telefone para busca");
+	}
+    
 }
 
 function getListAllUsers (callback){
-    User.find({ }, function(err, user) {
+    User.find({}, function(err, users) {
         if (err) throw err;
-        if (user == null){
+        if (users == null){
             callback("Usuário não encontrado");
         }else {
-            callback(user);
+            callback(users);
         }
     });
 }
 
 function deleteUser (phone, callback){
-    User.findOne({ phone: phone }, function(err, user) {
-        if (err) throw err;
-        console.log(user);
-        if (user == null ){ 
-            callback("Dispositivo não encontrado")
-        }else {
-			callback('Dispositivo deletado com sucesso!');
-        }
-    });
+	User.findOne({ phone: phone }, function(err, user) {
+		if (err) throw err;
+		console.log(user);
+		if (user == null ){ 
+			callback("User não encontrado")
+		}else {
+			User.remove(user,function(err, user){
+				if(err){
+					callback(err);
+				}else{					
+					callback('User deletado com sucesso!');
+				}	
+			})			
+		}
+	});	    
 }
 
-function registerUser (user, callback){	
-   var newUser = new user(user)
-    //usar valueof pra transforma o array numa string
-    User.findOneAndUpdate({phone: user.phone}, newUser, {upsert:true}, function(err, doc){
-		if (err) return res.send(500, { error: err });
-		return res.send("Salvo");
-	});
+function registerUser (user, callback){
+	if(user.phone){
+		User.findOneAndUpdate({phone: user.phone}, user, {upsert:true}, function(err, doc){
+			if (err) {callback({status: 500, error: err});}
+			else {
+				callback("Usuário salvo");
+			}		 
+		});			
+	}else{
+		callback("Não salvou");	
+	}
 }
 

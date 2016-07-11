@@ -9,7 +9,7 @@ config.seedDB = false;
 
 // Server settings
 config.server = {
-    host: process.env.IP || '0.0.0.0',
+    host: process.env.IP || 'localhost',
     port: process.env.PORT || 3000
 };
 
