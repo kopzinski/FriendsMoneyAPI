@@ -73,10 +73,9 @@ function getListTransactions (callback){
         {
             logger.error(constant.error.msg_mongo_error+": "+err);
             callback({status:500, error: err });
-        }else if (transaction == null || transaction == undefined)
+        }else if (transaction == null || transaction == undefined || transaction.length == 0)
         {
-            callback(constant.error.msg_no_register);
-            callback( {status:404, error: constant.error.msg_no_register});
+            callback( {status:404, error: constant.error.msg_empty_database});
         }
         else {
             callback(transaction);
@@ -145,16 +144,23 @@ function deleteTransaction(id, callback){
  * @return error or a transaction
  */
 function updateTransaction (transaction, callback){
+    console.log("transaction: "+transaction);
     Transaction.findOneAndUpdate({_id : transaction._id},{ $set: {value: transaction.value, 
         status:transaction.status, debtor:transaction.debtor, creditor:transaction.creditor}},
         function(err, transactionMongo){
+
+            console.log("transactionMongo",newTransaction);
              if (err){
                    logger.error(constant.error.msg_mongo_error+": "+err);
                     callback({status: 500, error: err });
                   }
-             if (transactionMongo)
+             if (newTransaction.value != transaction.value || newTransaction.status != transaction.status || newTransaction.creditor != transaction.creditor || newTransaction.debtor != transaction.debtor)
              {
                  callback(constant.success.msg_update_success);
+             }
+             else if(newTransaction.value == transaction.value || newTransaction.status == transaction.status || newTransaction.creditor == transaction.creditor || newTransaction.debtor == transaction.debtor)
+             {
+                 callback(constant.error.msg_reg_exists_update);
              }
              else {
                   callback( {status:404, error: constant.error.msg_no_register});

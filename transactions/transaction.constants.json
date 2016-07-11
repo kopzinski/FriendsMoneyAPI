@@ -28,6 +28,10 @@
         "message"   :"Transaction already registered."
  
       },
+      "msg_reg_exists_update":{
+          "result": "error",
+          "message": "Nothing to Update"
+      },
  
       "msg_del_failure" : {
  
@@ -44,8 +48,12 @@
       "msg_no_register" : {
  
          "result" : "error",
-         "message" : "Transaction not find"
+         "message" : "Transaction not found"
+      },
+      "msg_empty_database" : {
  
+         "result" : "error",
+         "message" : "There is no transactions yet"
       },
       "msg_mongo_error":{
         "result": "error",
@@ -53,7 +61,7 @@
       }
  
    },
- 
+   
    "success" : {
  
       "msg_reg_success" : {

@@ -5,7 +5,7 @@
  */
 var express = require('express');
 var transactionController = require('../transactions/transaction.controller');
-var userController = require('../user/user.controller');
+var userController = require('../users/user.controller');
 var router = express.Router();
 
 router.get('/',function(req, res){
@@ -13,15 +13,10 @@ router.get('/',function(req, res){
 })
 
 //Users
- router.post('/registerUser', userController.registerUser);
- router.post('/deleteUser', userController.deleteUser);
- router.post('/user', userController.getUser);
- router.post('/users', userController.getListAllUsers);
-
-// router.get('/user/:username', userController.getUser);
-// router.delete('/user/:username', userController.deleteUser);
-// router.put('/user', userController.updateUser);
-
+ router.post('/user', userController.registerUser);
+ router.delete('/deleteUser', userController.deleteUser);
+ router.get('/user', userController.getUser);
+ router.get('/users', userController.getListAllUsers);
 
 //Transactions
  router.get('/transactions', transactionController.getListTransactions);
