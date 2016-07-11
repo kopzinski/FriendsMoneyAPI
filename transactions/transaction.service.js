@@ -144,23 +144,23 @@ function deleteTransaction(id, callback){
  * @return error or a transaction
  */
 function updateTransaction (transaction, callback){
-    console.log("transaction: "+transaction);
     Transaction.findOneAndUpdate({_id : transaction._id},{ $set: {value: transaction.value, 
         status:transaction.status, debtor:transaction.debtor, creditor:transaction.creditor}},
         function(err, transactionMongo){
-
-            console.log("transactionMongo",newTransaction);
+            var newTransaction = new Transaction(transactionMongo);
              if (err){
                    logger.error(constant.error.msg_mongo_error+": "+err);
                     callback({status: 500, error: err });
                   }
-             if (newTransaction.value != transaction.value || newTransaction.status != transaction.status || newTransaction.creditor != transaction.creditor || newTransaction.debtor != transaction.debtor)
-             {
-                 callback(constant.success.msg_update_success);
-             }
-             else if(newTransaction.value == transaction.value || newTransaction.status == transaction.status || newTransaction.creditor == transaction.creditor || newTransaction.debtor == transaction.debtor)
+             if(newTransaction.value == transaction.value  && newTransaction.status == transaction.status && newTransaction.creditor.equals(transaction.creditor) &&  newTransaction.debtor.equals(transaction.debtor))
              {
                  callback(constant.error.msg_reg_exists_update);
+             }
+             else if (newTransaction.value != transaction.value || newTransaction.status != transaction.status ||  !newTransaction.creditor.equals(transaction.creditor) ||  !newTransaction.debtor.equals(transaction.debtor))
+             {
+                 console.log(newTransaction);
+
+                 callback(constant.success.msg_update_success);
              }
              else {
                   callback( {status:404, error: constant.error.msg_no_register});
