@@ -5,11 +5,20 @@
  */
 var express = require('express');
 var transactionController = require('../transactions/transaction.controller');
+var userController = require('../user/user.controller');
 var router = express.Router();
 
 router.get('/',function(req, res){
     res.send("Hello World");
 })
+
+//Users
+ router.get('/allUsers', userController.getListAllUsers);
+ 
+// router.get('/user/:username', userController.getUser);
+// router.delete('/user/:username', userController.deleteUser);
+// router.put('/user', userController.updateUser);
+
 
 //Transactions
  router.get('/transactions', transactionController.getListTransactions);
