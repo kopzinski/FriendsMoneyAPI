@@ -26,8 +26,9 @@ module.exports = service;
  * @param transaction object
  * @return a message with error or success
  */
+
 function createTransaction(transaction, callback){
-    transaction.save(function(err){
+    transaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{
              callback(constant.success.msg_reg_success)

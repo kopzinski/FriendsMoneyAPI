@@ -13,9 +13,10 @@ router.get('/',function(req, res){
 })
 
 //Users
+ router.post('/userTransaction', userController.registerUserFromTransaction);
  router.post('/user', userController.registerUser);
- router.delete('/deleteUser', userController.deleteUser);
- router.get('/user', userController.getUser);
+ router.delete('/deleteUser/:id', userController.deleteUser);
+ router.get('/user/:phone', userController.getUser);
  router.get('/users', userController.getListAllUsers);
 
 //Transactions

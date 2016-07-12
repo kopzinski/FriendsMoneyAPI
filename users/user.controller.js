@@ -7,6 +7,9 @@
 var express = require('express');
 var userService = require('./user.service');
 var User = require('./user.schema');
+var transactionService = require('../transactions/transaction.service');
+var constants = require('./user.constants');
+var Transaction = require('../transactions/transaction.schema');
 
 module.exports = {
     getListAllUsers:function (req, res, next) {
@@ -20,32 +23,69 @@ module.exports = {
         
     },
 	
-    getUser:function (req, res, next) {		
-        userService.getUser(req.body,function(user){
-            if (user) {
-                res.json(user);
-            } else {
-                res.sendStatus(404);
-            }
-        })
+    getUser:function (req, res, next) {
+        var user_phone = req.param.phone;
+        if (typeof user_phone == 'undefined' || !user_phone.trim()){
+             res.json(400, { error: constants.error.msg_invalid_param});
+        }
+        else {		
+            userService.getUser(user_phone,function(user){
+                if (user) {
+                    res.json(user);
+                } else {
+                    res.sendStatus(404);
+                }
+            })
+        }
     },
     
-    deleteUser:function (req, res, next) {		
-		userService.deleteUser(req.body.phone, function(result){
-			if(result){
-				res.send(result); 
-			}else {
-				res.status(400); 
-			}
-		})  
+    deleteUser:function (req, res, next) {
+          if (typeof req.body.phone == 'undefined' || !req.body.phone.trim()){
+             res.json(400, { error: constants.error.msg_invalid_param});
+        }else {	
+            userService.deleteUser(req.body.phone, function(result){
+                if(result){
+                    res.send(result); 
+                }else {
+                    res.status(400); 
+                }
+            })  
+        }
     },
-    
-    registerUser:function (req, res, next) {		
-		console.log("Ta pegando: ",req.body);				
-		userService.registerUser(req.body, function(result) {
-			res.json(result);
-		});
-			
+
+    registerUser:function (req, res, next) {
+        var user = new User(req.body);
+        console.log(user);
+         if ( typeof user.phone != 'undefined' || typeof user.email != 'undefined' || typeof user.deviceId != 'undefined'){
+             userService.registerUserDevice(req.body,function(response){
+                 if (response){
+                     res.json(response)
+                 }else {
+                     res.status(400);
+                 }
+             })
+         }else {
+              res.sendStatus(404);
+         }
+    },
+
+    registerUserFromTransaction:function (req, res, next) {
+        
+        var newTransaction = new Transaction(req.body.transaction);
+        var user = new User(req.body.user);
+		if (user.phone && newTransaction && (user.deviceId == null || user.deviceId == undefined)){
+             userService.registerUserFromTransaction(user,function(response){
+                 if (response){
+                     transactionService.createTransaction(newTransaction, function(response){
+                         res.json(response);
+                     })
+                 }else {
+                     res.json(response);
+                 }
+             })
+        }else {
+             res.json({status:400,  error: constants.error.msg_invalid_param});
+        }	
     }
 }
     

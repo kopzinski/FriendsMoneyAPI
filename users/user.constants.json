@@ -1,0 +1,93 @@
+{
+   "error" : {  
+ 
+      "msg_invalid_param"   : {  
+ 
+         "result"   : "error",
+         "message"  : "Invalid request parameters."
+ 
+      },
+ 
+      "msg_empty_param"     : {
+ 
+        "result"    :"error",
+        "message"   :"Parameters should not be empty."
+ 
+      },
+ 
+      "msg_reg_failure"     : {
+ 
+        "result"    :"error",
+        "message"   :"Registration failure."
+ 
+      },
+ 
+      "msg_reg_exists"  : {
+ 
+        "result"    :"error",
+        "message"   :"User already registered."
+ 
+      },
+      "msg_reg_exists_update":{
+          "result": "error",
+          "message": "Nothing to Update"
+      },
+ 
+      "msg_del_failure" : {
+ 
+         "result" : "error",
+         "message" : "Unable to remove this user"
+ 
+      },
+       "msg_find_failure" : {
+ 
+         "result" : "error",
+         "message" : "Unable to find an user"
+ 
+      },
+      "msg_no_register" : {
+ 
+         "result" : "error",
+         "message" : "There is no user from this phone"
+      },
+
+      "msg_field_empty":{
+        "result": "error",
+        "message": "Phone field must be something"
+      },
+      
+      "msg_empty_database" : {
+ 
+         "result" : "error",
+         "message" : "There is no users yet"
+      },
+      "msg_mongo_error":{
+        "result": "error",
+        "message": "Find an error"
+      }
+ 
+   },
+   
+   "success" : {
+ 
+      "msg_reg_success" : {
+ 
+        "result"    : "success",
+        "message"   : "User successfully registered."
+ 
+      },
+ 
+        "msg_del_success"  : {
+ 
+         "result" :  "success",
+         "message" : "User successfully removed"
+ 
+        },
+        "msg_update_success" : {
+ 
+         "result"    : "success",
+         "message"   : "User successfully updated."
+ 
+      }
+   }
+}
