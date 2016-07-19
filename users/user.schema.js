@@ -11,8 +11,8 @@ var userSchema = mongoose.Schema({
 	registrationId: String,
 	registrationFlag: Boolean,
 	deviceId:{ type: String, unique: false},
-	created_at:Date,
-	updated_at:Date
+	createdAt:Date,
+	updatedAt:Date
 });
 
 userSchema.pre('save', function(next){
@@ -20,29 +20,49 @@ userSchema.pre('save', function(next){
 var currentDate = new Date();
 
 //change the updated_at fielt to current date
-this.updated_at = currentDate;
+this.updatedAt = currentDate;
 
-// if created_at doesn't exist
-if(!this.created_at)
-    this.created_at = currentDate;
+// if createdAt doesn't exist
+if(!this.createdAt)
+    this.createdAt = currentDate;
 
 next();
 
 });
 
-userSchema.pre('update', function(next){
-//get current date
-var currentDate = new Date();
+userSchema.post('findOneAndUpdate', function() {
+	this.findOne({phone:this._update.phone}, function(err, userMongo){
+			if (userMongo.createdAt == null || userMongo.createdAt == undefined){
+				var currentDate = new Date();
+				userMongo.updatedAt = currentDate;
+				userMongo.createdAt = currentDate;
 
-//change the updated_at fielt to current date
-this.updated_at = currentDate;
-
-// if created_at doesn't exist
-if(!this.created_at)
-    this.created_at = currentDate;
-
-next();
-
+				console.log(this._update.phone);
+				userMongo.save(function(err){
+					if (err) console.log(err)
+					else console.log("bombo")	
+				})
+			}else {
+				var currentDate = new Date();
+				userMongo.updatedAt = currentDate;
+				userMongo.save(function(err){
+					if (err) console.log(err)
+					else console.log("bombo")	
+				})
+			}
+		})
+		
+	// if (this._update == null){
+	// 	this.update({},{ $set: { updatedAt: new Date(), createdAt: new Date() } });
+	// }else {
+	// 	this.findOne({phone:this._update.phone}, function(err, userMongo){
+	// 		if (userMongo.createdAt==undefined){
+	// 			this.update({},{ $set: { updatedAt: new Date(), createdAt: new Date() } });
+	// 		}else {
+	// 			this.update({},{ $set: { updatedAt: new Date()} });
+	// 		}
+	// 	})
+	// }
 });
 
 module.exports = mongoose.model('Users', userSchema);

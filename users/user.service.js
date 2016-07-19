@@ -14,7 +14,7 @@ function getUser (phone, callback){
 		User.findOne({ phone: phone }, function(err, user) {
 			if (err)  callback({status: 500, error: err });
 			if (user == null || user == undefined){
-				callback({status:404, error: constants.error.msg_no_register});
+				callback(false);
 			}else {
 				callback(user);
 			}
@@ -52,8 +52,8 @@ function deleteUser (phone, callback){
 
 function registerUserFromTransaction (user, callback){
 	var newUser = new User(user);
-	newUser.registration_flag = false;
-	User.findOne({$or: [{phone: newUser.phone},{deviceId: newUser.deviceId}]}, function(err, userMongo){
+	newUser.registrationFlag = false;
+	User.findOne({phone: newUser.phone}, function(err, userMongo){
 		if (userMongo){
 			callback(true);
 		}else if(newUser.phone){
@@ -70,11 +70,16 @@ function registerUserFromTransaction (user, callback){
 }
 
 function registerUserDevice (user, callback){
-	user.registration_flag = true;
+	user.registrationFlag = true;
 	if(user.phone){
-		User.findOneAndUpdate({phone:user.phone},user, {upsert:true}, function(err, newUser){
+		User.findOneAndUpdate({$or:[{phone:user.phone},{deviceId: user.deviceId}]},user, {upsert:true}, function(err, newUser){
+			if (!newUser){
+				callback(constants.success.msg_reg_success);
 
-			if (err) {console.log("Aqui"), callback({status: 500, error: err});}
+			}else if (err) 
+			{
+				console.log("Aqui"), callback({status: 500, error: err});
+			}
 			else if (newUser.name == user.name && newUser.phone == user.phone && newUser.email == user.email && newUser.registrationId == user.registrationId && newUser.deviceId == user.deviceId){
 				 callback(constants.error.msg_reg_exists_update);
 			}
@@ -86,3 +91,5 @@ function registerUserDevice (user, callback){
 		callback({status:500, error: constants.error.msg_field_empty});	
 	}
 }
+
+

@@ -7,6 +7,7 @@
 var Transaction = require('./transaction.schema'),
     logger      = require('mm-node-logger')(module),
     User        = require('../users/user.schema'),
+    userService = require('../users/user.service'),
     constant    = require('./transaction.constants.json');
 
 //export all methods to be accessed externally
@@ -28,6 +29,7 @@ module.exports = service;
  */
 
 function createTransaction(transaction, callback){
+    userService
     transaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{

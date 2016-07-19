@@ -8,7 +8,9 @@ var transactionSchema = mongoose.Schema({
 	value: {type:Number, required:true},
 	status: String,
 	debtor: { type: String, required:true, ref: 'User'},
-	creditor: { type: String, required:true, ref: 'User'}
+	creditor: { type: String, required:true, ref: 'User'},
+	createdAt: Date,
+	updatedAt: Date
 		
 });
 
@@ -17,11 +19,11 @@ transactionSchema.pre('save', function(next){
 var currentDate = new Date();
 
 //change the updated_at fielt to current date
-this.updated_at = currentDate;
+this.updatedAt = currentDate;
 
-// if created_at doesn't exist
-if(!this.created_at)
-    this.created_at = currentDate;
+// if createdAt doesn't exist
+if(!this.createdAt)
+    this.createdAt = currentDate;
 
 next();
 

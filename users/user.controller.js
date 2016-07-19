@@ -10,6 +10,8 @@ var User = require('./user.schema');
 var transactionService = require('../transactions/transaction.service');
 var constants = require('./user.constants');
 var Transaction = require('../transactions/transaction.schema');
+var async = require('async');
+
 
 module.exports = {
     getListAllUsers:function (req, res, next) {
@@ -33,7 +35,7 @@ module.exports = {
                 if (user) {
                     res.json(user);
                 } else {
-                    res.sendStatus(404);
+                    res.sendStatus({status:404, error: constants.error.msg_no_register});
                 }
             })
         }
@@ -53,9 +55,8 @@ module.exports = {
         }
     },
 
-    registerUser:function (req, res, next) {
+    registerUserDevice:function (req, res, next) {
         var user = new User(req.body);
-        console.log(user);
          if ( typeof user.phone != 'undefined' || typeof user.email != 'undefined' || typeof user.deviceId != 'undefined'){
              userService.registerUserDevice(req.body,function(response){
                  if (response){
@@ -69,8 +70,8 @@ module.exports = {
          }
     },
 
-    registerUserFromTransaction:function (req, res, next) {
-        
+
+    registerUserFromTransaction:function (req, res, next) {        
         var newTransaction = new Transaction(req.body.transaction);
         var user = new User(req.body.user);
 		if (user.phone && newTransaction && (user.deviceId == null || user.deviceId == undefined)){
@@ -86,6 +87,112 @@ module.exports = {
         }else {
              res.json({status:400,  error: constants.error.msg_invalid_param});
         }	
+    },
+    
+    contactListIntersection:function(req,res,next){
+        var newContacts = [];
+        //var contacts = req.body.contacts;
+        var contacts = req.body;
+        var flagAchou;
+        var itemsProcessed = 0;
+        var phoneProcessed = 0;
+
+        contacts.forEach(function(contact){
+            if ( contact.phoneNumbers != null){
+                var phoneProcessed = 0;
+                 flagAchou = false;
+                contact.phoneNumbers.forEach(function(phone){
+                   userService.getUser(phone.value, function(user) {
+                       itemsProcessed++;
+                       
+                            if (user){
+                                 newContacts.push({name: user.name, registrationFlag: true, phone: user.phone})
+                                 phoneProcessed++;
+                                 console.log("teste"+phoneProcessed);
+                            }else {
+                                    console.log("teste"+phoneProcessed);
+                                    newContacts.push({name: contact.name.formatted, registrationFlag: false, phone: contact.phoneNumbers})
+                                    phoneProcessed++;
+                            }
+                            if(itemsProcessed === contacts.length) {
+                                res.json(newContacts);
+                            }
+                            
+                              
+                        })
+                })
+
+                
+            }  
+        })
     }
 }
+    // {"id":"4599","pref":false,"value":"+555181080549","type":"mobile"}],"emails":null,"addresses":null,"ims":null,"organizations":null,"birthday":null,"note":"","photos":null,"categories":null,"urls":null},{"id":"867","rawId":"866","displayName":"Luiz","name":{"givenName":"Luiz","formatted":"Luiz "},"nickname":null,"phoneNumbers":[{"id":"4761","pref":false,"value":"+55 51 9163-3250","type":"mobile"}
+
+
+//    contacts.forEach(function(contact){
+//             if ( contact.phoneNumbers != null){
+//                 var phoneProcessed = 0;
+//                  flagAchou = false;
+//                 contact.phoneNumbers.forEach(function(phone){
+//                    userService.getUser(phone.value, function(user) {
+//                        itemsProcessed++;
+                       
+//                             if (user){
+//                                  newContacts.push({name: user.name, registrationFlag: true, phone: user.phone})
+//                                  phoneProcessed++;
+//                                  console.log("teste"+phoneProcessed);
+//                             }else {
+//                                     console.log("teste"+phoneProcessed);
+//                                     newContacts.push({name: contact.name.formatted, registrationFlag: false, phone: contact.phoneNumbers})
+//                                     phoneProcessed++;
+//                             }
+//                             if(itemsProcessed === contacts.length) {
+//                                 res.json(newContacts);
+//                             }
+                            
+                              
+//                         })
+//                 })
+
+//    }}
+//     contactListIntersection2:function(req, res, next){
+//           var newContacts = [];
+//           var contacts = req.body;
+//           var flagAchou;
+//           var itemsProcessed = 0;
+//           contacts.forEach(function(contact){
+//               if (contact.phoneNumbers.length > 0){
+//                   var phoneProcessed = 0;
+//                   flagAchou = false;
+                  
+//                   contact.phoneNumbers.forEach(function(phone){
+                      
+//                       userService.getUser(phone, function(user) {
+                          
+//                           if (user){
+//                               newContacts.push({name: user.name, registrationFlag: true, phone: user.phone})
+//                               flagAchou = true;
+// 							  phoneProcessed++;
+//                           }else {
+// 							  phoneProcessed++;
+// 						  }
+
+                            
+//                             console.log(flagAchou);
+//                             if(phoneProcessed === contact.phoneNumbers.length && flagAchou == false) {
+//                                             newContacts.push({name: contact.name.formatted, registrationFlag: false, phone: contact.phoneNumbers})
+//                                     }   
+//                             })
+//                   })
+//                   if(itemsProcessed === contacts.length) {
+//                      res.json(newContacts);
+//                 }
+//                     itemsProcessed++;
+//               }
+// 		  })
+
+//           }
+//     }
+
     
