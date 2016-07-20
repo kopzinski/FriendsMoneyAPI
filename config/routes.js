@@ -7,7 +7,7 @@ var express = require('express');
 var transactionController = require('../transactions/transaction.controller');
 var userController = require('../users/user.controller');
 var router = express.Router();
-var testeController = require('../users/teste.controller');
+var testeController = require('../users/contactList.controller');
 
 router.get('/',function(req, res){
     res.send("Hello World");
