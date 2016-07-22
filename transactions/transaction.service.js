@@ -11,6 +11,7 @@ var Transaction = require('./transaction.schema'),
     constant    = require('./transaction.constants.json');
 
 //export all methods to be accessed externally
+
 var service = {};
  service.createTransaction = createTransaction;
  service.getListTransactions = getListTransactions;
@@ -44,24 +45,33 @@ function createTransaction(transaction, callback){
  * @param user_id
  * @return error or a list with transactions
  */
-function getListTransactionsByUser (user_id, callback){
-
-    Transaction.find({$or: [{debtor:user_id}, {creditor: user_id}]},function(err, transactions){
-
-        if (err) 
-        {
-            logger.error(constant.error.msg_mongo_error+": "+err);
-            callback({status:500, error: err });
-        }else if (transactions[0] == null || transactions[0] == undefined)
-        {
-            logger.error(constant.error.msg_no_register);
-            callback({status:404, error: constant.error.msg_no_register});
-        }
-        else {
-            callback(transactions);
-        }
-
+function getListTransactionsByUser (phone, callback){
+    User.find({phone: phone}, function(err, user){
+          if (err) 
+            {
+                logger.error(constant.error.msg_mongo_error+": "+err);
+                callback({status:500, error: err });
+            }else if(user){
+                 Transaction.find({$or: [{debtor:user._id}, {creditor: user._id}]},function(err, transactions){
+                    if (err) 
+                    {
+                        logger.error(constant.error.msg_mongo_error+": "+err);
+                        callback({status:500, error: err });
+                    }else if (transactions[0] == null || transactions[0] == undefined)
+                    {
+                        logger.error(constant.error.msg_no_register);
+                        callback({status:404, error: constant.error.msg_no_register});
+                    }
+                    else {
+                        callback(transactions);
+                    }
+                })
+            }else {
+                callback({status:404, error: "No users"});
+            }
+       
     })
+    
 }
 
 /**
@@ -69,6 +79,7 @@ function getListTransactionsByUser (user_id, callback){
  * 
  * @return error or a list with transactions
  */
+
 function getListTransactions (callback){
 
     Transaction.find({},function(err, transaction){

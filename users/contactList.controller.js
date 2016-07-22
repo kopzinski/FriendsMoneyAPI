@@ -13,9 +13,9 @@ module.exports = controller;
 
 function getContact (req,res){
     var newContacts = [];
+    console.log(req.body);
     var contacts = req.body.contacts;  
     async.map(contacts, FilterContacts, function(err, results){
-        console.log(results);
        res.json(results);
     });
 }
@@ -50,14 +50,5 @@ var FilterContacts = function(contact, doneCallback){
     }
 }
 
-var FilterNumber = function(numberPhone, callback){
-    console.log("entrou aqui");
-     userService.getUser(numberPhone, function(user) {
-        if (user){
-           callback(user);
-        }else {
-           callback(false); 
-        }
-    });
-}
+
 

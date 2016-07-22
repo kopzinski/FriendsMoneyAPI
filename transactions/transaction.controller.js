@@ -4,8 +4,10 @@ var express = require('express'),
     Transaction = require('./transaction.schema');
 
 module.exports = {
+    
     createTransaction:function (req, res, next) {
         var newTransaction = new Transaction({
+            creator:req.body.creator,
             value: req.body.value,
             status: req.body.status,
             debtor: req.body.debtor,

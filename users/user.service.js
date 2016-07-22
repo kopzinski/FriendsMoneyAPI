@@ -93,3 +93,6 @@ function registerUserDevice (user, callback){
 }
 
 
+function filterPhone(phoneNumber, callback){
+    
+}
