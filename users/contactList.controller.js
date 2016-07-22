@@ -21,8 +21,6 @@ function getContact (req,res){
 }
 
 var FilterContacts = function(contact, doneCallback){
-    // A random amount of time has passed.
-    // Callback with no error and the result of num * num
     if( contact.phoneNumbers == null){
         return doneCallback();
     }else { 
@@ -30,7 +28,7 @@ var FilterContacts = function(contact, doneCallback){
             var newUser;
             userService.getUser(phone.value, function(user) {
                 if (user){
-                    var newContact = {name: user.name, phone: {value:user.phone}, registrationFlag: true};
+                    var newContact = {name: user.name, phone: {value:user.phone}, registrationFlag: true, _id:user._id};
                     
                     callback2(newContact)
                 }else {

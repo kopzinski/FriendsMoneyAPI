@@ -35,13 +35,28 @@ module.exports = {
             }
         })
     },
-
-    getListTransactionsByUser:function (req, res, next) {
-        var user_id = req.params.user_id;
-        if ( typeof user_id == 'undefined'){
+    
+    getListTransactionPendencies:function(req, res, next){
+        var phone = req.params.phone;
+        if ( typeof phone == 'undefined'){
             res.json(400, { error: constants.error.msg_invalid_param});
         }else {
-            transactionService.getListTransactionsByUser(user_id, function(transactions){
+            transactionService.getListTransactionsPendencies(phone, function(transactions){
+                if (transactions){
+                    res.json(transactions);
+                }else {
+                    res.sendStatus(404);
+                }
+            })
+        }  
+    },
+
+    getListTransactionsByUser:function (req, res, next) {
+        var phone = req.params.phone;
+        if ( typeof phone == 'undefined'){
+            res.json(400, { error: constants.error.msg_invalid_param});
+        }else {
+            transactionService.getListTransactionsByUser(phone, function(transactions){
                 if (transactions){
                     res.json(transactions);
                 }else {

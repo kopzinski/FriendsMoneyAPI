@@ -19,6 +19,7 @@ var service = {};
  service.getTransaction = getTransaction;
  service.deleteTransaction = deleteTransaction;
  service.updateTransaction = updateTransaction;
+ service.getListTransactionsPendencies = getListTransactionsPendencies;
 
 module.exports = service;
 
@@ -30,7 +31,6 @@ module.exports = service;
  */
 
 function createTransaction(transaction, callback){
-    userService
     transaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{
@@ -39,6 +39,34 @@ function createTransaction(transaction, callback){
     })
 }
 
+function getListTransactionsPendencies (phone, callback){
+     User.findOne({phone : {$regex : ".*"+phone+".*"}}, function(err, user){
+          if (err) 
+            {
+                logger.error(constant.error.msg_mongo_error+": "+err);
+                callback({status:500, error: err });
+            }else if(user){
+                console.log(user);
+                 Transaction.find({$and:[{$or:[{debtor:{phone: user.phone}}, {creditor: {phone:user.phone}}]},{creator:{$ne:user.phone}}]},function(err, transactions){
+                    if (err) 
+                    {
+                        logger.error(constant.error.msg_mongo_error+": "+err);
+                        callback({status:500, error: err });
+                    }else if (transactions[0] == null || transactions[0] == undefined)
+                    {
+                        logger.error(constant.error.msg_no_register);
+                        callback({status:404, error: constant.error.msg_no_register});
+                    }
+                    else {
+                        callback(transactions);
+                    }
+                })
+            }else {
+                callback({status:404, error: "No users"});
+            }
+       
+    })
+}
 /**
  * This method receive an user_id parameter (mongo id) and find all transactions with a debtor or a creditor that match with
  * the user_id parameter
@@ -46,13 +74,15 @@ function createTransaction(transaction, callback){
  * @return error or a list with transactions
  */
 function getListTransactionsByUser (phone, callback){
-    User.find({phone: phone}, function(err, user){
+
+    User.findOne({phone : {$regex : ".*"+phone+".*"}}, function(err, user){
           if (err) 
             {
                 logger.error(constant.error.msg_mongo_error+": "+err);
                 callback({status:500, error: err });
             }else if(user){
-                 Transaction.find({$or: [{debtor:user._id}, {creditor: user._id}]},function(err, transactions){
+                console.log(user);
+                 Transaction.find({$or: [{debtor:{phone: user.phone}}, {creditor: {phone:user.phone}}]},function(err, transactions){
                     if (err) 
                     {
                         logger.error(constant.error.msg_mongo_error+": "+err);
