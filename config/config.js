@@ -5,7 +5,7 @@ var config = {};
 config.environment = process.env.NODE_ENV || 'development';
 
 // Populate the DB with sample data
-config.seedDB = false;
+config.seedDB = true;
 
 // Server settings
 config.server = {

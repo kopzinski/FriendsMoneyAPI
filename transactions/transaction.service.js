@@ -40,16 +40,17 @@ function createTransaction(transaction, callback){
 }
 
 function getListTransactionsPendencies (phone, callback){
-     User.findOne({phone : {$regex : ".*"+phone+".*"}}, function(err, user){
+     User.findOne({$or:[{phone : {$regex : ".*"+phone+".*"}},{phone:phone}]}, function(err, user){
           if (err) 
             {
                 logger.error(constant.error.msg_mongo_error+": "+err);
                 callback({status:500, error: err });
             }else if(user){
                 console.log(user);
-                 Transaction.find({$and:[{$or:[{debtor:{phone: user.phone}}, {creditor: {phone:user.phone}}]},{creator:{$ne:user.phone}}]},function(err, transactions){
+                 Transaction.find({$and:[{$or:[{debtor:{phone: user.phone}}, {creditor: {phone:user.phone}}]},{"creator.phone": { $ne: user.phone }},{status:"pendente"}]},function(err, transactions){
                     if (err) 
                     {
+                        console.log(err);
                         logger.error(constant.error.msg_mongo_error+": "+err);
                         callback({status:500, error: err });
                     }else if (transactions[0] == null || transactions[0] == undefined)
@@ -67,6 +68,31 @@ function getListTransactionsPendencies (phone, callback){
        
     })
 }
+
+function setUserInTransaction(transactions, callback){
+    var newtransactions;
+    transactions.forEach(function(transaction){
+        var newtransaction = new Transaction(transaction);
+        userService.getUser(transaction.creator.phone,function(user){
+            if (user){
+                var newtransaction.creator = user;
+                if (newtransaction.creator == newTransaction.debtor){
+                    var newtransaction.debtor = user;
+                    userService.getUser(transaction.creditor.phone,function(user){
+                         var newtransaction.creditor = user;
+                    })
+                }else {
+                    var newtransaction.creditor = user;
+                    userService.getUser(transaction.creditor.phone,function(user){
+                         var newtransaction.debtor = user;
+                    })
+                }
+            }
+            newTransaction.push(newTransaction);
+        })
+    }) 
+}
+
 /**
  * This method receive an user_id parameter (mongo id) and find all transactions with a debtor or a creditor that match with
  * the user_id parameter
