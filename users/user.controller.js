@@ -73,18 +73,25 @@ module.exports = {
 
     registerUserFromTransaction:function (req, res, next) {        
         var newTransaction = new Transaction(req.body.transaction);
+        
         var user = new User(req.body.user);
+        
 		if (user.phone && newTransaction && (user.deviceId == null || user.deviceId == undefined)){
              userService.registerUserFromTransaction(user,function(response){
                  if (response){
+                     console.log('transaçãoiofhasjfjas: ',newTransaction);
                      transactionService.createTransaction(newTransaction, function(response){
+                         console.log('if ',response)
+                     
                          res.json(response);
                      })
                  }else {
+                     console.log('elsesaeaeaseeae ',response)
                      res.json(response);
                  }
              })
         }else {
+
              res.json({status:400,  error: constants.error.msg_invalid_param});
         }	
     }

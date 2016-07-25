@@ -16,6 +16,7 @@ function getContact (req,res){
     console.log(req.body);
     var contacts = req.body.contacts;  
     async.map(contacts, FilterContacts, function(err, results){
+        console.log(results);
        res.json(results);
     });
 }

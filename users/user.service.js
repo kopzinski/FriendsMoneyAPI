@@ -74,7 +74,7 @@ function registerUserDevice (user, callback){
 	if(user.phone){
 		User.findOneAndUpdate({$or:[{phone:user.phone},{deviceId: user.deviceId}]},user, {upsert:true}, function(err, newUser){
 			if (!newUser){
-				callback(constants.success.msg_reg_success);
+				callback(user);
 
 			}else if (err) 
 			{
@@ -84,7 +84,7 @@ function registerUserDevice (user, callback){
 				 callback(constants.error.msg_reg_exists_update);
 			}
 			else {
-				callback(constants.success.msg_reg_success);
+				callback(user);
 			}		 
 		});			
 	}else{
