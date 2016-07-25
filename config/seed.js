@@ -61,30 +61,30 @@ populateUser(user1, user2,user3, function(response){
         console.log("entrou aqui");
         var transaction1 = new Transaction({
             value:506,
-            creator:{phone:user2.phone},
-            debtor:{phone:user1.phone},
-            creditor:{phone:user2.phone},
+            creator:{phone:user3.phone,  name:user2.name, registrationFlag:user2.registrationFlag},
+            debtor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
+            creditor:{phone:user3.phone, name:user2.name, registrationFlag:user2.registrationFlag},
             status:"pendente"
         })
         var transaction2 = new Transaction({
             value:53,
-            creator:{phone:user3.phone},
-            debtor:{phone:user2.phone},
-            creditor:{phone:user3.phone},
+            creator:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            debtor:{phone:user2.phone, name:user2.name, registrationFlag:user2.registrationFlag},
+            creditor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
             status:"pendente"
         })
         var transaction3 = new Transaction({
             value:300,
-            creator:{phone:user1.phone},
-            debtor:{phone:user3.phone},
-            creditor:{phone:user1.phone},
+            creator:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
+            debtor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            creditor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
             status:"pendente"
         })
         var transaction4 = new Transaction({
             value:150,
-            creator:{phone:user3.phone},
-            debtor:{phone:user3.phone},
-            creditor:{phone:user1.phone},
+            creator:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            debtor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            creditor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
             status:"pendente"
         })
 

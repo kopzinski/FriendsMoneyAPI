@@ -8,6 +8,7 @@ var Transaction = require('./transaction.schema'),
     logger      = require('mm-node-logger')(module),
     User        = require('../users/user.schema'),
     userService = require('../users/user.service'),
+    async       = require('async'),
     constant    = require('./transaction.constants.json');
 
 //export all methods to be accessed externally
@@ -40,14 +41,18 @@ function createTransaction(transaction, callback){
 }
 
 function getListTransactionsPendencies (phone, callback){
+
      User.findOne({$or:[{phone : {$regex : ".*"+phone+".*"}},{phone:phone}]}, function(err, user){
+        // console.log(user);
           if (err) 
             {
                 logger.error(constant.error.msg_mongo_error+": "+err);
                 callback({status:500, error: err });
             }else if(user){
-                console.log(user);
-                 Transaction.find({$and:[{$or:[{debtor:{phone: user.phone}}, {creditor: {phone:user.phone}}]},{"creator.phone": { $ne: user.phone }},{status:"pendente"}]},function(err, transactions){
+                
+             Transaction.find({$and:[{$or:[{"debtor.phone":user.phone}, {"creditor.phone": user.phone}]},{"creator.phone": { $ne: user.phone }},{status:"pendente"}]},function(err, transactions){
+
+                     console.log(transactions)
                     if (err) 
                     {
                         console.log(err);
@@ -59,7 +64,7 @@ function getListTransactionsPendencies (phone, callback){
                         callback({status:404, error: constant.error.msg_no_register});
                     }
                     else {
-                        callback(transactions);
+                        callback(transactions);    
                     }
                 })
             }else {
@@ -67,30 +72,6 @@ function getListTransactionsPendencies (phone, callback){
             }
        
     })
-}
-
-function setUserInTransaction(transactions, callback){
-    var newtransactions;
-    transactions.forEach(function(transaction){
-        var newtransaction = new Transaction(transaction);
-        userService.getUser(transaction.creator.phone,function(user){
-            if (user){
-                var newtransaction.creator = user;
-                if (newtransaction.creator == newTransaction.debtor){
-                    var newtransaction.debtor = user;
-                    userService.getUser(transaction.creditor.phone,function(user){
-                         var newtransaction.creditor = user;
-                    })
-                }else {
-                    var newtransaction.creditor = user;
-                    userService.getUser(transaction.creditor.phone,function(user){
-                         var newtransaction.debtor = user;
-                    })
-                }
-            }
-            newTransaction.push(newTransaction);
-        })
-    }) 
 }
 
 /**
@@ -108,7 +89,7 @@ function getListTransactionsByUser (phone, callback){
                 callback({status:500, error: err });
             }else if(user){
                 console.log(user);
-                 Transaction.find({$or: [{debtor:{phone: user.phone}}, {creditor: {phone:user.phone}}]},function(err, transactions){
+                 Transaction.find({$or: [{"debtor.phone": user.phone}, {"creditor.phone":user.phone}]},function(err, transactions){
                     if (err) 
                     {
                         logger.error(constant.error.msg_mongo_error+": "+err);
