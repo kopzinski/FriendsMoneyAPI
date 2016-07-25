@@ -36,18 +36,16 @@ userSchema.post('findOneAndUpdate', function() {
 				var currentDate = new Date();
 				userMongo.updatedAt = currentDate;
 				userMongo.createdAt = currentDate;
-
-				console.log(this._update.phone);
 				userMongo.save(function(err){
 					if (err) console.log(err)
-					else console.log("bombo")	
+				
 				})
 			}else {
 				var currentDate = new Date();
 				userMongo.updatedAt = currentDate;
 				userMongo.save(function(err){
 					if (err) console.log(err)
-					else console.log("bombo")	
+				
 				})
 			}
 		})

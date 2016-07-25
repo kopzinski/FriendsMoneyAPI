@@ -8,6 +8,7 @@ var Transaction = require('./transaction.schema'),
     logger      = require('mm-node-logger')(module),
     User        = require('../users/user.schema'),
     userService = require('../users/user.service'),
+    async       = require('async'),
     constant    = require('./transaction.constants.json');
 
 //export all methods to be accessed externally
@@ -19,6 +20,7 @@ var service = {};
  service.getTransaction = getTransaction;
  service.deleteTransaction = deleteTransaction;
  service.updateTransaction = updateTransaction;
+ service.getListTransactionsPendencies = getListTransactionsPendencies;
 
 module.exports = service;
 
@@ -30,12 +32,45 @@ module.exports = service;
  */
 
 function createTransaction(transaction, callback){
-
     transaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{
              callback(constant.success.msg_reg_success)
         }
+    })
+}
+
+function getListTransactionsPendencies (phone, callback){
+
+     User.findOne({$or:[{phone : {$regex : ".*"+phone+".*"}},{phone:phone}]}, function(err, user){
+        // console.log(user);
+          if (err) 
+            {
+                logger.error(constant.error.msg_mongo_error+": "+err);
+                callback({status:500, error: err });
+            }else if(user){
+                
+             Transaction.find({$and:[{$or:[{"debtor.phone":user.phone}, {"creditor.phone": user.phone}]},{"creator.phone": { $ne: user.phone }},{status:"pendente"}]},function(err, transactions){
+
+                     console.log(transactions)
+                    if (err) 
+                    {
+                        console.log(err);
+                        logger.error(constant.error.msg_mongo_error+": "+err);
+                        callback({status:500, error: err });
+                    }else if (transactions[0] == null || transactions[0] == undefined)
+                    {
+                        logger.error(constant.error.msg_no_register);
+                        callback({status:404, error: constant.error.msg_no_register});
+                    }
+                    else {
+                        callback(transactions);    
+                    }
+                })
+            }else {
+                callback({status:404, error: "No users"});
+            }
+       
     })
 }
 
@@ -46,13 +81,15 @@ function createTransaction(transaction, callback){
  * @return error or a list with transactions
  */
 function getListTransactionsByUser (phone, callback){
-    User.find({phone: phone}, function(err, user){
+
+    User.findOne({phone : {$regex : ".*"+phone+".*"}}, function(err, user){
           if (err) 
             {
                 logger.error(constant.error.msg_mongo_error+": "+err);
                 callback({status:500, error: err });
             }else if(user){
-                 Transaction.find({$or: [{debtor:user._id}, {creditor: user._id}]},function(err, transactions){
+                console.log(user);
+                 Transaction.find({$or: [{"debtor.phone": user.phone}, {"creditor.phone":user.phone}]},function(err, transactions){
                     if (err) 
                     {
                         logger.error(constant.error.msg_mongo_error+": "+err);

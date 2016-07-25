@@ -6,10 +6,10 @@ var mongoose = require('mongoose');
 
 var transactionSchema = mongoose.Schema({
 	value: {type:Number, required:true},
-	creator:{ type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+	creator:{ phone:{type: String, required:true, ref: 'User'}, name:{type:String}, registrationFlag:String},
 	status: String,
-	debtor: { type: mongoose.Schema.Types.ObjectId, ref: 'User'  },
-	creditor: { type: mongoose.Schema.Types.ObjectId, ref: 'User'  },
+	debtor: { phone:{type: String, required:true, ref: 'User'}, name:{type:String}, registrationFlag:String},
+	creditor: { phone:{type: String, required:true, ref: 'User'}, name:{type:String}, registrationFlag:String}, 
 	createdAt: Date,
 	updatedAt: Date
 });

@@ -12,7 +12,6 @@ var user1 = new User(
     {
         name:"Adrian Lemes",
         registrationFlag: true,
-        registrationId: null,
         phone: "+555197412487",
         email:"adrianlemess@gmail.com",
         deviceId:"1239849123"
@@ -20,21 +19,97 @@ var user1 = new User(
     }
 )
 
+
 var user2 = new User(
     {
         phone: "+555177777777",
-        registrationFlag: false,
+        registrationFlag: false
     }
 )
-User.find({}).remove(function() {
-    
-    userService.registerUserDevice(user1, function(err){    
-        if (err) console.log(err)
-    })
-    userService.registerUserDevice(user2, function(err){    
-        if (err) console.log(err)
-    })
 
+
+var user3 = new User(
+    {
+        name:"Guilherme Webber",
+        phone: "+555155555555",
+        email:"guilhermewebber@gmail.com",
+        deviceId:"189237854"
+
+    }
+)
+function populateUser(user1, user2,user3, callback){
+    User.find({}).remove(function() {
+        userService.registerUserDevice(user1, function(response){    
+            if (response) console.log(response);
+            userService.registerUserFromTransaction(user2, function(response){    
+                if (response) console.log(response);
+                userService.registerUserDevice(user3, function(response){    
+                    if (response){
+                        console.log(response);
+                        callback(true);
+                    }                     
+                })
+              
+            })
+        })
+    })
 }
+
+populateUser(user1, user2,user3, function(response){
+     Transaction.find({}).remove(function() {
+    if (response){
+        console.log("entrou aqui");
+        var transaction1 = new Transaction({
+            value:506,
+            creator:{phone:user3.phone,  name:user2.name, registrationFlag:user2.registrationFlag},
+            debtor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
+            creditor:{phone:user3.phone, name:user2.name, registrationFlag:user2.registrationFlag},
+            status:"pendente"
+        })
+        var transaction2 = new Transaction({
+            value:53,
+            creator:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            debtor:{phone:user2.phone, name:user2.name, registrationFlag:user2.registrationFlag},
+            creditor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            status:"pendente"
+        })
+        var transaction3 = new Transaction({
+            value:300,
+            creator:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
+            debtor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            creditor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
+            status:"pendente"
+        })
+        var transaction4 = new Transaction({
+            value:150,
+            creator:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            debtor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            creditor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
+            status:"pendente"
+        })
+
+        transactionService.createTransaction(transaction1,function(response){
+            console.log(response)
+            if (response){
+                transactionService.createTransaction(transaction2,function(response){
+                    console.log(response)
+                    if (response){
+                        transactionService.createTransaction(transaction3,function(response){
+                            console.log(response)
+                            if (response){
+                                transactionService.createTransaction(transaction4,function(response){
+                                    if (response){
+                                        console.log(response);
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    }
+})
+})
 
 

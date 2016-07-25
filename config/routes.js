@@ -23,7 +23,8 @@ router.post('/contacts', testeController.getContact);
 
 //Transactions
 router.get('/transactions', transactionController.getListTransactions);
-router.get('/transactions/:user_id', transactionController.getListTransactionsByUser);
+router.get('/pendenciesTransactions/:phone', transactionController.getListTransactionPendencies);
+router.get('/transactions/:phone', transactionController.getListTransactionsByUser);
 router.get('/transaction/:id',transactionController.getTransaction);
 router.delete('/transaction/:id', transactionController.deleteTransaction);
 router.put('/transaction', transactionController.updateTransaction);
