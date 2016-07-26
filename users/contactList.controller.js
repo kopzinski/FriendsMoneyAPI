@@ -13,10 +13,10 @@ module.exports = controller;
 
 function getContact (req,res){
     var newContacts = [];
-    console.log(req.body);
+    //console.log(req.body);
     var contacts = req.body.contacts;  
     async.map(contacts, FilterContacts, function(err, results){
-        console.log(results);
+       console.log(results);
        res.json(results);
     });
 }
@@ -27,9 +27,11 @@ var FilterContacts = function(contact, doneCallback){
     }else { 
         async.each(contact.phoneNumbers, function(phone, callback2){
             var newUser;
+            
             userService.getUser(phone.value, function(user) {
+            
                 if (user && user.registrationFlag != false){
-                    var newContact = {name: user.name, phone: {value:user.phone}, registrationFlag: true, _id:user._id};
+                    var newContact = {name: user.name, phone: {value: user.phone.value}, registrationFlag: true, _id:user._id};
                     
                     callback2(newContact)
                 }else {

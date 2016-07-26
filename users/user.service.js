@@ -11,7 +11,8 @@ service.registerUserFromTransaction = registerUserFromTransaction;
 module.exports = service;
 
 function getUser (phone, callback){
-		User.findOne({ phone: phone }, function(err, user) {
+		User.findOne({$or:[{phone : {$regex : ".*"+phone+".*"}},{"phone.value":phone}]}, function(err, user) {
+			
 			if (err)  callback({status: 500, error: err });
 			if (user == null || user == undefined){
 				callback(false);
@@ -51,6 +52,7 @@ function deleteUser (phone, callback){
 }
 
 function registerUserFromTransaction (user, callback){
+	
 	var newUser = new User(user);
 	newUser.registrationFlag = false;
 	User.findOne({phone: newUser.phone}, function(err, userMongo){
@@ -71,16 +73,19 @@ function registerUserFromTransaction (user, callback){
 
 function registerUserDevice (user, callback){
 	user.registrationFlag = true;
+	 
 	if(user.phone){
+		
 		User.findOneAndUpdate({$or:[{phone:user.phone},{deviceId: user.deviceId}]},user, {upsert:true}, function(err, newUser){
-			if (!newUser){
-				callback(user);
 
-			}else if (err) 
-			{
+			if (err){
 				console.log("Aqui"), callback({status: 500, error: err});
+
+			}else if (!newUser) 
+			{
+				callback(user);
 			}
-			else if (newUser.name == user.name && newUser.phone == user.phone && newUser.email == user.email && newUser.registrationId == user.registrationId && newUser.deviceId == user.deviceId){
+			else if (newUser.name == user.name && newUser.phone == user.phone  && newUser.registrationId == user.registrationId && newUser.deviceId == user.deviceId){
 				 callback(constants.error.msg_reg_exists_update);
 			}
 			else {

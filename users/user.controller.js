@@ -56,9 +56,12 @@ module.exports = {
     },
 
     registerUserDevice:function (req, res, next) {
-        var user = new User(req.body);
-         if ( typeof user.phone != 'undefined' || typeof user.email != 'undefined' || typeof user.deviceId != 'undefined'){
-             userService.registerUserDevice(req.body,function(response){
+
+        var user  = req.body;
+
+         if ( typeof user.phone != 'undefined' || typeof user.deviceId != 'undefined'){
+             userService.registerUserDevice(user,function(response){
+
                  if (response){
                      res.json(response)
                  }else {
@@ -73,24 +76,23 @@ module.exports = {
 
     registerUserFromTransaction:function (req, res, next) {        
         var newTransaction = new Transaction(req.body.transaction);
-        console.log(req.body);
-        
+
+
         var user = new User(req.body.user);
         
 		if (user.phone && newTransaction && (user.deviceId == null || user.deviceId == undefined)){
              userService.registerUserFromTransaction(user,function(response){
+
                  if (response){
                      transactionService.createTransaction(newTransaction, function(response){
-                         console.log('if ',response)
+                         console.log(response);
                          res.json(response);
                      })
                  }else {
-                     console.log('elsesaeaeaseeae ',response)
                      res.json(response);
                  }
              })
         }else {
-
              res.json({status:400,  error: constants.error.msg_invalid_param});
         }	
     }
