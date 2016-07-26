@@ -32,6 +32,7 @@ module.exports = service;
  */
 
 function createTransaction(transaction, callback){
+    // console.log(transaction);
     transaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{
