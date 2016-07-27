@@ -28,7 +28,7 @@ var FilterContacts = function(contact, doneCallback){
             var newUser;
             userService.getUser(phone.value, function(user) {
                 if (user){
-                    var newContact = {name: user.name, phone: {value:user.phone}, registrationFlag: true, _id:user._id};
+                    var newContact = {name: user.name, phone: [{value:user.phone}], registrationFlag: true, _id:user._id};
                     
                     callback2(newContact)
                 }else {

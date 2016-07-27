@@ -1,6 +1,6 @@
 var express = require('express'),
     transactionService = require('./transaction.service'),
-    constants = require('./transaction.constants.json'),
+    constant = require('./transaction.constants.json'),
     Transaction = require('./transaction.schema');
 
 module.exports = {
@@ -14,7 +14,7 @@ module.exports = {
             creditor: req.body.creditor
         });
         if ( typeof newTransaction.value  == 'undefined' ||  typeof newTransaction.status  == 'undefined' || typeof newTransaction.debtor == 'undefined'|| typeof newTransaction.creditor == "undefined") {
-            res.json({status:400,  error: constants.error.msg_invalid_param});
+            res.json({status:400,  error: constant.error.msg_invalid_param});
         }else {
             transactionService.createTransaction(newTransaction, function(response){
                 if (response){
@@ -39,7 +39,7 @@ module.exports = {
     getListTransactionPendencies:function(req, res, next){
         var phone = req.params.phone;
         if ( typeof phone == 'undefined'){
-            res.json(400, { error: constants.error.msg_invalid_param});
+            res.json(400, { error: constant.error.msg_invalid_param});
         }else {
             transactionService.getListTransactionsPendencies(phone, function(transactions){
                 if (transactions){
@@ -54,7 +54,7 @@ module.exports = {
     getListTransactionsByUser:function (req, res, next) {
         var phone = req.params.phone;
         if ( typeof phone == 'undefined'){
-            res.json(400, { error: constants.error.msg_invalid_param});
+            res.json(400, { error: constant.error.msg_invalid_param});
         }else {
             transactionService.getListTransactionsByUser(phone, function(transactions){
                 if (transactions){
@@ -69,7 +69,7 @@ module.exports = {
     getTransaction:function (req, res, next) {
         var id = req.params.id;
         if ( typeof id == 'undefined'){
-            res.json(400, { error: constants.error.msg_invalid_param});
+            res.json(400, { error: constant.error.msg_invalid_param});
         }else {
             transactionService.getTransaction(id, function(transaction){
                 if (transaction){
@@ -84,7 +84,7 @@ module.exports = {
     deleteTransaction:function (req, res, next) {
         var id = req.params.id;
         if ( typeof id == 'undefined'){
-            res.json(400, { error: constants.error.msg_invalid_param});
+            res.json(400, { error: constant.error.msg_invalid_param});
         }else {
             transactionService.deleteTransaction(id, function(response){
                 if (response){
@@ -97,15 +97,10 @@ module.exports = {
     },
 
     updateTransaction:function (req, res, next) {
-         var updateTransaction = new Transaction({
-            _id:      req.body.id,
-            value:    req.body.value,
-            status:   req.body.status,
-            debtor:   req.body.debtor,
-            creditor: req.body.creditor
-        });
+        console.log(req.body);
+         var updateTransaction = new Transaction(req.body);
         if ( typeof updateTransaction.value  == 'undefined' ||  typeof updateTransaction.status  == 'undefined' || typeof updateTransaction.debtor == 'undefined'|| typeof updateTransaction.creditor == "undefined") {
-            res.json(400, { error: constant.error.msg_invalid_param});
+            res.status(400).json({ error: constant.error.msg_invalid_param});
         }else {
             transactionService.updateTransaction(updateTransaction, function(response){
                 if (response){
