@@ -51,9 +51,9 @@ function getListTransactionsPendencies (phone, callback){
                 callback({status:500, error: err });
             }else if(user){
                 
-             Transaction.find({$and:[{$or:[{"debtor.phone":user.phone}, {"creditor.phone": user.phone}]},{"creator.phone": { $ne: user.phone }},{status:"pendente"}]},function(err, transactions){
+             Transaction.find({$and:[{$or:[{"debtor.phone":user.phone}, {"creditor.phone": user.phone}]},{"creator.phone": { $ne: user.phone }},{status:"pending"}]},function(err, transactions){
 
-                     console.log(transactions)
+                    //  console.log(transactions)
                     if (err) 
                     {
                         console.log(err);
@@ -65,6 +65,7 @@ function getListTransactionsPendencies (phone, callback){
                         callback({status:404, error: constant.error.msg_no_register});
                     }
                     else {
+                        // console.log(transactions);
                         callback(transactions);    
                     }
                 })
@@ -89,7 +90,7 @@ function getListTransactionsByUser (phone, callback){
                 logger.error(constant.error.msg_mongo_error+": "+err);
                 callback({status:500, error: err });
             }else if(user){
-                console.log(user);
+                // console.log(user);
                  Transaction.find({$or: [{"debtor.phone": user.phone}, {"creditor.phone":user.phone}]},function(err, transactions){
                     if (err) 
                     {
@@ -210,7 +211,7 @@ function updateTransaction (transaction, callback){
              }
              else if (newTransaction.value != transaction.value || newTransaction.status != transaction.status ||  !newTransaction.creditor.equals(transaction.creditor) ||  !newTransaction.debtor.equals(transaction.debtor))
              {
-                 console.log(newTransaction);
+                //  console.log(newTransaction);
 
                  callback(constant.success.msg_update_success);
              }

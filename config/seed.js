@@ -37,6 +37,15 @@ var user3 = new User(
 
     }
 )
+var user4 = new User(
+    {
+        name:"João Vitor A Machado",
+        phone: "+555182158998",
+        email:"joaoamachado@gmail.com",
+        deviceId:"12345567"
+
+    }
+)
 function populateUser(user1, user2,user3, callback){
     User.find({}).remove(function() {
         userService.registerUserDevice(user1, function(response){    
@@ -61,31 +70,31 @@ populateUser(user1, user2,user3, function(response){
         console.log("entrou aqui");
         var transaction1 = new Transaction({
             value:506,
-            creator:{phone:user3.phone,  name:user2.name, registrationFlag:user2.registrationFlag},
+            creator:{phone:user3.phone,  name:user3.name, registrationFlag:user3.registrationFlag},
             debtor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
-            creditor:{phone:user3.phone, name:user2.name, registrationFlag:user2.registrationFlag},
-            status:"pendente"
+            creditor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            status:"pending"
         })
         var transaction2 = new Transaction({
             value:53,
             creator:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
             debtor:{phone:user2.phone, name:user2.name, registrationFlag:user2.registrationFlag},
             creditor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
-            status:"pendente"
+            status:"pending"
         })
         var transaction3 = new Transaction({
             value:300,
             creator:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
             debtor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
             creditor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
-            status:"pendente"
+            status:"pending"
         })
         var transaction4 = new Transaction({
             value:150,
-            creator:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
-            debtor:{phone:user3.phone, name:user3.name, registrationFlag:user3.registrationFlag},
+            creator:{phone:user4.phone, name:user4.name, registrationFlag:user4.registrationFlag},
+            debtor:{phone:user4.phone, name:user4.name, registrationFlag:user4.registrationFlag},
             creditor:{phone:user1.phone, name:user1.name, registrationFlag:user1.registrationFlag},
-            status:"pendente"
+            status:"pending"
         })
 
         transactionService.createTransaction(transaction1,function(response){
