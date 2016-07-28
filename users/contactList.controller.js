@@ -16,7 +16,8 @@ function getContact (req,res){
     //console.log(req.body);
     var contacts = req.body.contacts;  
     async.map(contacts, FilterContacts, function(err, results){
-       console.log(results);
+      
+    //   console.log(results);
        res.json(results);
     });
 }
@@ -29,11 +30,9 @@ var FilterContacts = function(contact, doneCallback){
             var newUser;
             
             userService.getUser(phone.value, function(user) {
-            
+                //console.log("usuário: ",user);
                 if (user && user.registrationFlag != false){
                     var newContact = {name: user.name, phone: {value: user.phone.value}, registrationFlag: true, _id:user._id};
-
-                    
                     callback2(newContact)
                 }else {
                     callback2(); 

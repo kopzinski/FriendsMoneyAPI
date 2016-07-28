@@ -32,7 +32,7 @@ module.exports = service;
  */
 
 function createTransaction(transaction, callback){
-    // console.log(transaction);
+   
     transaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{
@@ -43,15 +43,11 @@ function createTransaction(transaction, callback){
 
 function getListTransactionsPendencies (phone, callback){
 
-     User.findOne({$or:[{phone : {$regex : ".*"+phone+".*"}},{phone:phone}]}, function(err, user){
-        // console.log(user);
-          if (err) 
-            {
-                logger.error(constant.error.msg_mongo_error+": "+err);
-                callback({status:500, error: err });
-            }else if(user){
-                
-             Transaction.find({$and:[{$or:[{"debtor.phone":user.phone}, {"creditor.phone": user.phone}]},{"creator.phone": { $ne: user.phone }},{status:"pending"}]},function(err, transactions){
+     userService.getUser(phone, function(user){
+
+
+            if(user){
+             Transaction.find({$and:[{$or:[{"debtor.phone.value":user.phone.value}, {"creditor.phone.value": user.phone.value}]},{"creator.phone.value": { $ne: user.phone.value }},{status:"pending"}]},function(err, transactions){
 
                     //  console.log(transactions)
                     if (err) 

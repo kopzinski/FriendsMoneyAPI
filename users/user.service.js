@@ -11,15 +11,15 @@ service.registerUserFromTransaction = registerUserFromTransaction;
 module.exports = service;
 
 function getUser (phone, callback){
-		User.findOne({$or:[{phone : {$regex : ".*"+phone+".*"}},{"phone.value":phone}]}, function(err, user) {
-			
-			if (err)  callback({status: 500, error: err });
-			if (user == null || user == undefined){
-				callback(false);
-			}else {
-				callback(user);
-			}
-		});
+			var newPhone = phone.trim();
+			User.findOne({$or:[{phone : {$regex : ".*"+newPhone+".*"}},{"phone.value":newPhone}]}, function(err, user) {
+				if (err)  callback({status: 500, error: err });
+				if (user == null || user == undefined){
+					callback(false);
+				}else {
+					callback(user);
+				}
+			});
 	}
 
 function getListAllUsers (callback){
@@ -97,7 +97,3 @@ function registerUserDevice (user, callback){
 	}
 }
 
-
-function filterPhone(phoneNumber, callback){
-    
-}
