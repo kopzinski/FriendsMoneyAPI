@@ -83,12 +83,8 @@ function getListTransactionsPendencies (phone, callback){
  */
 function getListTransactionsByUser (phone, callback){
 
-    User.findOne({phone : {$regex : ".*"+phone+".*"}}, function(err, user){
-          if (err) 
-            {
-                logger.error(constant.error.msg_mongo_error+": "+err);
-                callback({status:500, error: err });
-            }else if(user){
+    userService.getUser(phone,function(user){
+           if(user){
                 console.log(user);
                  Transaction.find({$or: [{"debtor.phone": user.phone}, {"creditor.phone":user.phone}]},function(err, transactions){
                     if (err) 

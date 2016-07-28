@@ -61,6 +61,7 @@ module.exports = {
             res.json(400, { error: constants.error.msg_invalid_param});
         }else {
             transactionService.getListTransactionsByUser(phone, function(transactions){
+                console.log(transactions);
                 if (transactions){
                     res.json(transactions);
                 }else {
