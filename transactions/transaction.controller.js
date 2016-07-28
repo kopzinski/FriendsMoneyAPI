@@ -63,7 +63,7 @@ module.exports = {
         }else {
             transactionService.getListTransactionsByUser(phone, function(transactions){
                 console.log(transactions);
-                if (transactions){
+                if (transactions){ 
                     console.log(transactions);
                     res.json(transactions);
                 }else {
