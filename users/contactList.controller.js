@@ -32,6 +32,7 @@ var FilterContacts = function(contact, doneCallback){
             
                 if (user && user.registrationFlag != false){
                     var newContact = {name: user.name, phone: {value: user.phone.value}, registrationFlag: true, _id:user._id};
+
                     
                     callback2(newContact)
                 }else {
