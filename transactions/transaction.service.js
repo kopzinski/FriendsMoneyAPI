@@ -82,7 +82,7 @@ function getListTransactionsByUser (phone, callback){
 
     userService.getUser(phone,function(user){
            if(user){
-                console.log(user);
+               
 
                  Transaction.find({$or: [{"debtor.phone": user.phone}, {"creditor.phone":user.phone}]},function(err, transactions){
                     if (err) 
@@ -92,7 +92,7 @@ function getListTransactionsByUser (phone, callback){
                     }else if (transactions[0] == null || transactions[0] == undefined)
                     {
                         logger.error(constant.error.msg_no_register);
-                        callback({status:404, error: constant.error.msg_no_register});
+                        callback({error: constant.error.msg_no_register});
                     }
                     else {
                         callback(transactions);
