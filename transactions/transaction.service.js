@@ -64,7 +64,7 @@ function getListTransactionsPendencies (phone, callback){
                         // console.log(transactions);
                         callback(transactions);    
                     }
-                })
+                }).sort({createdAt : 1});
             }else {
                 callback({status:404, error: "No users"});
             }
@@ -97,7 +97,7 @@ function getListTransactionsByUser (phone, callback){
                     else {
                         callback(transactions);
                     }
-                })
+                }).sort({createdAt : -1})
             }else {
                 callback({status:404, error: "No users"});
             }
