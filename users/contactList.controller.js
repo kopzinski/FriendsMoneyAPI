@@ -11,12 +11,12 @@ var controller = [];
 controller.getContact = getContact;
 module.exports = controller;
 
+
 function getContact (req,res){
     var newContacts = [];
     //console.log(req.body);
     var contacts = req.body.contacts;  
     async.map(contacts, FilterContacts, function(err, results){
-      
     //   console.log(results);
        res.json(results);
     });
@@ -27,8 +27,7 @@ var FilterContacts = function(contact, doneCallback){
         return doneCallback();
     }else { 
         async.each(contact.phoneNumbers, function(phone, callback2){
-            var newUser;
-            
+            var newUser;    
             userService.getUser(phone.value, function(user) {
                 //console.log("usuário: ",user);
                 if (user && user.registrationFlag != false){
@@ -51,5 +50,10 @@ var FilterContacts = function(contact, doneCallback){
     }
 }
 
-
+function getPhoneNumberPattern(phone){
+    phone = phone.replace(/[^\w\\s]/gi, '');
+    console.log("+"+phone);
+    var testPattern = /^[0-9]{2}[0-9]{10,11}$/;
+    return testPattern.test(phone)
+}
 

@@ -32,8 +32,8 @@ module.exports = service;
  */
 
 function createTransaction(transaction, callback){
-   
-    transaction.save(function(err, transaction){
+   var newTransaction = new Transaction(transaction)
+    newTransaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{
              callback(constant.success.msg_reg_success)

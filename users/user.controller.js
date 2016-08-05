@@ -26,16 +26,18 @@ module.exports = {
     },
 	
     getUser:function (req, res, next) {
-        var user_phone = req.param.phone;
+
+        var user_phone = req.params.phone;
+        console.log(user_phone);
         if (typeof user_phone == 'undefined' || !user_phone.trim()){
-             res.json(400, { error: constants.error.msg_invalid_param});
+             res.status(400).json({ error: constants.error.msg_invalid_param});
         }
         else {		
             userService.getUser(user_phone,function(user){
                 if (user) {
                     res.json(user);
                 } else {
-                    res.sendStatus({status:404, error: constants.error.msg_no_register});
+                    res.status(404).json({status:404, error: constants.error.msg_no_register});
                 }
             })
         }
@@ -55,46 +57,45 @@ module.exports = {
         }
     },
 
-    registerUserDevice:function (req, res, next) {
+    registerUserOrTransaction: function(req,res,next){
 
-        var user  = req.body;
+        if (req.body.user){
+            var user = req.body.user;
+        //    console.log(user);
+             if ( typeof user.phone != 'undefined' || typeof user.deviceId != 'undefined'){
 
-         if ( typeof user.phone != 'undefined' || typeof user.deviceId != 'undefined'){
-             userService.registerUserDevice(user,function(response){
-
-                 if (response){
+                 userService.registerUserFlagTrue(user,function(response){
+                     console.log(response);
+                     if (response){
                      res.json(response)
                  }else {
-                     res.status(400);
-                 }
-             })
-         }else {
-              res.sendStatus(404);
-         }
-    },
+                         res.status(400);
+                     }
+                 })
+             }else {
+                 res.status(400);
 
+             }
+        }else if(req.body.transaction){
 
-    registerUserFromTransaction:function (req, res, next) {        
-        var newTransaction = new Transaction(req.body.transaction);
-
-
-        var user = new User(req.body.user);
-        
-		if (user.phone && newTransaction && (user.deviceId == null || user.deviceId == undefined)){
-             userService.registerUserFromTransaction(user,function(response){
-
-                 if (response){
-                     transactionService.createTransaction(newTransaction, function(response){
-                         console.log(response);
-                         res.json(response);
-                     })
-                 }else {
-                     res.json(response);
-                 }
-             })
-        }else {
-             res.json({status:400,  error: constants.error.msg_invalid_param});
-        }	
+            var transaction = req.body.transaction;
+                if((transaction.debtor.registrationFlag == false )||(transaction.creditor.registrationFlag == false)){
+                    userService.registerUserFlagFalse(transaction,function(response){
+                        if (response){
+                            transactionService.createTransaction(transaction, function(response){
+                                console.log(response);
+                                res.json(response);
+                            })
+                        }else {
+                            res.json(response);
+                        }
+                    })
+                }else {
+                    res.status(400);
+                }
+            }else {
+                res.status(400);
+            }
     }
 }
 

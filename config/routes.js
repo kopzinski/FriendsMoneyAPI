@@ -14,8 +14,7 @@ router.get('/',function(req, res){
 })
 
 //Users
-router.post('/userTransaction', userController.registerUserFromTransaction);
-router.post('/user', userController.registerUserDevice);
+router.post('/userOrTransaction', userController.registerUserOrTransaction);
 router.delete('/deleteUser/:id', userController.deleteUser);
 router.get('/user/:phone', userController.getUser);
 router.get('/users', userController.getListAllUsers);
