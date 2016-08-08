@@ -58,12 +58,9 @@ module.exports = {
     },
 
     registerUserOrTransaction: function(req,res,next){
-
         if (req.body.user){
             var user = req.body.user;
-        //    console.log(user);
              if ( typeof user.phone != 'undefined' || typeof user.deviceId != 'undefined'){
-
                  userService.registerUserFlagTrue(user,function(response){
                      console.log(response);
                      if (response){
@@ -74,7 +71,6 @@ module.exports = {
                  })
              }else {
                  res.status(400);
-
              }
         }else if(req.body.transaction){
 

@@ -27,8 +27,10 @@ var FilterContacts = function(contact, doneCallback){
         return doneCallback();
     }else { 
         async.each(contact.phoneNumbers, function(phone, callback2){
-            var newUser;    
-            userService.getUser(phone.value, function(user) {
+            //console.log(phone.value);
+            userService.getValidNumberPhone(phone.value).then(function(numberPhone){
+                console.log(numberPhone)
+                userService.getUser(numberPhone, function(user) {
                 //console.log("usuário: ",user);
                 if (user && user.registrationFlag != false){
                     var newContact = {name: user.name, phone: {value: user.phone.value}, registrationFlag: true, _id:user._id};
@@ -37,11 +39,13 @@ var FilterContacts = function(contact, doneCallback){
                     callback2(); 
                 }
              });
+            }).fail(function(){
+                callback2();
+            })
         }, 
         function(result){
             if (!result){
                 var newContact2 = {name: contact.name.formatted, phone:contact.phoneNumbers, registrationFlag: false};
-                
                 return doneCallback(null, newContact2)
             }else {
                 return doneCallback(null, result)
@@ -50,10 +54,5 @@ var FilterContacts = function(contact, doneCallback){
     }
 }
 
-function getPhoneNumberPattern(phone){
-    phone = phone.replace(/[^\w\\s]/gi, '');
-    console.log("+"+phone);
-    var testPattern = /^[0-9]{2}[0-9]{10,11}$/;
-    return testPattern.test(phone)
-}
+
 

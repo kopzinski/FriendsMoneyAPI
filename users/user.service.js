@@ -2,16 +2,16 @@ var User = require('./user.schema');
 var userService = require('./user.service');
 var constants = require('./user.constants.json');
 var service = {};
-
+var Q = require('q');
 service.getUser = getUser;
 service.getListAllUsers = getListAllUsers;
 service.deleteUser = deleteUser;
 service.registerUserFlagTrue = registerUserFlagTrue;
 service.registerUserFlagFalse = registerUserFlagFalse;
+service.getValidNumberPhone = getValidNumberPhone;
 module.exports = service;
 
 function getUser (phone, callback){
-			
 			var newPhone = phone.trim();
 			User.findOne({$or:[{"phone.value" : {$regex : ".*"+newPhone+".*"}},{"phone.value":newPhone}]}, function(err, user) {
 				if (err)  callback({status: 500, error: err });
@@ -86,7 +86,7 @@ function registerUserFlagTrue (user, callback){
 	user.registrationFlag = true;
 
 	 if(user.phone){
-		User.findOne({$or:[{"phone.value" : {$regex : ".*"+user.phone.value+".*"}},{"phone.value":user.phone.value}]}, function(err, userMongo){
+		User.findOne({$or:[{"phone.value" : {$regex : ".*"+user.phone.value+".*"}},{"phone.value":user.phone.value}, {deviceId:user.deviceId}]}, function(err, userMongo){
 			console.log(userMongo);
 			if(err){
 				console.log("erro");
@@ -123,22 +123,17 @@ function registerUserFlagTrue (user, callback){
 			}
 		})
 	 }
-	//  	User.findOneAndUpdate({$or:[{"phone.value" : {$regex : ".*"+user.phone.value+".*"}},{"phone.value":user.phone.value}]},user, {upsert:true}, function(err, newUser){
-	//  		if (err){
-	//  			console.log("Aqui"), callback({status: 500, error: err});
-	//  		}else if (!newUser) 
-	//  		{
-	//  			callback(user);
-	//  		}
-	//  		else if (newUser.name == user.name && newUser.phone == user.phone  && newUser.registrationId == user.registrationId && newUser.deviceId == user.deviceId){
-	//  			 callback(constants.error.msg_reg_exists_update);
-	//  		}
-	//  		else {
-	//  			callback(user);
-	//  		}		 
-	//  	});			
-	//  }else{
-	//  	callback({status:500, error: constants.error.msg_field_empty});	
-	//  }
 }
 
+function getValidNumberPhone(phone){
+    var deferred = Q.defer();
+    phone = phone.replace(/[^\w\\s]/gi, '');
+    var testPattern = /^[0-9]{7,}$/;
+    if (testPattern.test(phone)){
+        console.log("phone"+phone);
+         deferred.resolve(phone);
+    }else {
+        deferred.reject(false);
+    }
+    return deferred.promise;
+}
