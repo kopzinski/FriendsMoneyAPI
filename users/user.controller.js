@@ -55,10 +55,9 @@ module.exports = {
                 }
             })  
         }
-    },
-
-    registerUserOrTransaction: function(req,res,next){
-        if (req.body.user){
+    }, 
+    registerUser:function(req, res, next){
+          if (req.body.user){
             var user = req.body.user;
              if ( typeof user.phone != 'undefined' || typeof user.deviceId != 'undefined'){
                  userService.registerUserFlagTrue(user,function(response){
@@ -72,14 +71,19 @@ module.exports = {
              }else {
                  res.status(400);
              }
-        }else if(req.body.transaction){
-
+          }else {
+               res.status(400);
+          }
+    },
+    registerUserFromTransaction: function(req,res,next){
+        console.log("entrou");  
+        if(req.body.transaction){
             var transaction = req.body.transaction;
-                if((transaction.debtor.registrationFlag == false )||(transaction.creditor.registrationFlag == false)){
+                if(((!transaction.debtor.registrationFlag)||(!transaction.creditor.registrationFlag))&& (transaction.creditor.phone)||(transaction.debtor.phone)){
+                   
                     userService.registerUserFlagFalse(transaction,function(response){
                         if (response){
                             transactionService.createTransaction(transaction, function(response){
-                                console.log(response);
                                 res.json(response);
                             })
                         }else {

@@ -14,7 +14,8 @@ router.get('/',function(req, res){
 })
 
 //Users
-router.post('/userOrTransaction', userController.registerUserOrTransaction);
+router.post('/user',userController.registerUser);
+router.post('/userFromTransaction', userController.registerUserFromTransaction);
 router.delete('/deleteUser/:id', userController.deleteUser);
 router.get('/user/:phone', userController.getUser);
 router.get('/users', userController.getListAllUsers);
@@ -22,7 +23,7 @@ router.post('/contacts', testeController.getContact);
 
 //Transactions
 router.get('/transactions', transactionController.getListTransactions);
-router.get('/pendenciesTransactions/:phone', transactionController.getListTransactionPendencies);
+router.get('/pendingTransactions/:phone', transactionController.getListTransactionPendencies);
 router.get('/transactions/:phone', transactionController.getListTransactionsByUser);
 router.get('/transaction/:id',transactionController.getTransaction);
 router.delete('/transaction/:id', transactionController.deleteTransaction);

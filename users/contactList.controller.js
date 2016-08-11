@@ -27,11 +27,9 @@ var FilterContacts = function(contact, doneCallback){
         return doneCallback();
     }else { 
         async.each(contact.phoneNumbers, function(phone, callback2){
-            //console.log(phone.value);
             userService.getValidNumberPhone(phone.value).then(function(numberPhone){
-                console.log(numberPhone)
+                numberPhone = "+"+numberPhone;
                 userService.getUser(numberPhone, function(user) {
-                //console.log("usuário: ",user);
                 if (user && user.registrationFlag != false){
                     var newContact = {name: user.name, phone: {value: user.phone.value}, registrationFlag: true, _id:user._id};
                     callback2(newContact)

@@ -12,15 +12,21 @@ service.getValidNumberPhone = getValidNumberPhone;
 module.exports = service;
 
 function getUser (phone, callback){
-			var newPhone = phone.trim();
-			User.findOne({$or:[{"phone.value" : {$regex : ".*"+newPhone+".*"}},{"phone.value":newPhone}]}, function(err, user) {
-				if (err)  callback({status: 500, error: err });
-				if (user == null || user == undefined){
-					callback(false);
+			getValidNumberPhone(phone).then(function(numberValid){
+				numberValid = "+"+numberValid;
+				if (numberValid){
+					User.findOne({$or:[{"phone.value" : {$regex : ".*"+numberValid+".*"}},{"phone.value":numberValid}]}, function(err, user) {
+						if (err)  callback({status: 500, error: err });
+						if (user == null || user == undefined){
+							callback(false);
+						}else {
+							callback(user);
+						}
+					});	
 				}else {
-					callback(user);
+					callback(constants.error.msg_invalid_param)
 				}
-			});
+			})
 	}
 
 function getListAllUsers (callback){
@@ -35,21 +41,22 @@ function getListAllUsers (callback){
 }
 
 function deleteUser (phone, callback){
-	User.findOne({$or:[{"phone.value" : {$regex : ".*"+phone+".*"}},{"phone.value":phone}]}, function(err, user) {
-		if (err) { callback({status: 500, error: err })
+				getUser(phone, function(user){
+					if (!user) { callback({status: 500, error: err })
 
-		}else if (user == null ){ 
-			  callback({status:404, error: constants.error.msg_no_register});
-		}else {
-			User.remove(user,function(err, user){
-				if(err){
-					callback(err);
-				}else{					
-					callback(constants.success.msg_del_success);
-				}	
-			})			
-		}
-	});	    
+						}else if (user == null ){ 
+							callback({status:404, error: constants.error.msg_no_register});
+						}else {
+							User.remove(user,function(err, user){
+								if(err){
+									callback(err);
+								}else{					
+									callback(constants.success.msg_del_success);
+								}	
+							})			
+						}
+   
+				})			
 }
 
 function registerUserFlagFalse (transaction, callback){
@@ -64,22 +71,28 @@ function registerUserFlagFalse (transaction, callback){
 			registrationFlag:false
 		}
 	}
+
 	var newUser = new User(user);
-	newUser.registrationFlag = false;
-	User.findOne({$or:[{"phone.value" : {$regex : ".*"+newUser.phone.value+".*"}},{"phone.value":newUser.phone.value}]}, function(err, userMongo){
-		if (userMongo){
-			callback(true);
-		}else if(newUser.phone){
-			newUser.save(function(err, doc){
-				if (err) {callback(false);}
-				else {
-					callback(true);
-				}		 
-			});			
-		}else{
-			callback(false);	
-		}
+	getValidNumberPhone(newUser.phone.value).then(function(phoneValid){
+		phoneValid = "+"+phoneValid;
+		newUser.registrationFlag = false;
+		newUser.phone.value = phoneValid;
+		getUser(newUser.phone.value, function(userMongo){
+			if (userMongo){
+				callback(true);
+			}else if(!userMongo && newUser.phone){
+				newUser.save(function(err, doc){
+					if (err) {callback(false);}
+					else {
+						callback(true);
+					}		 
+				});			
+			}else{
+				callback(false);	
+			}
+		})
 	})
+	
 }
 
 function registerUserFlagTrue (user, callback){
@@ -87,7 +100,6 @@ function registerUserFlagTrue (user, callback){
 
 	 if(user.phone){
 		User.findOne({$or:[{"phone.value" : {$regex : ".*"+user.phone.value+".*"}},{"phone.value":user.phone.value}, {deviceId:user.deviceId}]}, function(err, userMongo){
-			console.log(userMongo);
 			if(err){
 				console.log("erro");
 				callback({error: err});
@@ -112,10 +124,11 @@ function registerUserFlagTrue (user, callback){
 				userMongo.phone = user.phone;
 				if (user.deviceId)
 				userMongo.deviceId = user.deviceId;
+				userMongo.registrationFlag = true;
 				userMongo.save(function(err){
-					if (err)
+					if (err) {
 					callback({error: err});
-					else{
+					}else{
 						callback(userMongo);
 					}
 					
@@ -130,7 +143,11 @@ function getValidNumberPhone(phone){
     phone = phone.replace(/[^\w\\s]/gi, '');
     var testPattern = /^[0-9]{7,}$/;
     if (testPattern.test(phone)){
-        console.log("phone"+phone);
+		if (phone.length == 8 || phone.length == 9){
+			phone = "5551"+phone;
+		}else if (phone.length == 10 || phone.length == 11){
+			phone = "55"+phone;
+		}
          deferred.resolve(phone);
     }else {
         deferred.reject(false);

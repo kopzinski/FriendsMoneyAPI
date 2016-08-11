@@ -33,6 +33,16 @@ module.exports = service;
 
 function createTransaction(transaction, callback){
    var newTransaction = new Transaction(transaction)
+      if (newTransaction.debtor.phone.value == newTransaction.creator.phone.value){
+	    userService.getValidNumberPhone(newTransaction.creditor.phone.value).then(function(validNumber){
+            newTransaction.creditor.phone.value = "+"+validNumber;
+        })
+	}else {
+		userService.getValidNumberPhone(newTransaction.debtor.phone.value).then(function(validNumber){
+            newTransaction.debtor.phone.value = "+"+validNumber;
+            console.log("debtor",newTransaction.debtor.phone.value);
+        })
+	}
     newTransaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{
@@ -44,8 +54,6 @@ function createTransaction(transaction, callback){
 function getListTransactionsPendencies (phone, callback){
 
      userService.getUser(phone, function(user){
-
-
             if(user){
              Transaction.find({$and:[{$or:[{"debtor.phone.value":user.phone.value}, {"creditor.phone.value": user.phone.value}]},{"creator.phone.value": { $ne: user.phone.value }},{status:"pending"}]},function(err, transactions){
 
