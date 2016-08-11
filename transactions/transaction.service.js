@@ -225,23 +225,23 @@ function updateTransaction (transaction, callback){
 
 function updateUserTransaction (user){
     getListTransactionsByUser(user.phone.value, function(transactionList){
-        console.log(transactionList);
+
         if (transactionList && user.name){
             transactionList.forEach(function(transaction){
                 if (transaction.debtor.phone.value == user.phone.value){
-                    if (transaction.debtor.name)
+                    if (!transaction.debtor.name)
                     transaction.debtor.name = user.name;
                     else 
                     console.log("Nothing to Change");
-                    
+
                 }else if (transaction.creditor.phone.value == user.phone.value){
-                     if (transaction.creditor.name)
+                     if (!transaction.creditor.name)
                     transaction.creditor.name = user.name;
                     else 
                     console.log("Nothing to Change");
                 }
                 transaction.save(function(err){
-                    console.log(err);
+                    if (err)console.log(err);
                 })
             })
         }else {

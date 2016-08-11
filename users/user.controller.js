@@ -61,7 +61,6 @@ module.exports = {
             var user = req.body.user;
              if ( typeof user.phone != 'undefined' || typeof user.deviceId != 'undefined'){
                  userService.registerUserFlagTrue(user,function(response){
-                     console.log(response);
                      if (response){
                      res.json(response)
                      transactionService.updateUserTransaction(user)
@@ -77,7 +76,7 @@ module.exports = {
           }
     },
     registerUserFromTransaction: function(req,res,next){
-        console.log("entrou");  
+
         if(req.body.transaction){
             var transaction = req.body.transaction;
                 if(((!transaction.debtor.registrationFlag)||(!transaction.creditor.registrationFlag))&& (transaction.creditor.phone)||(transaction.debtor.phone)){
