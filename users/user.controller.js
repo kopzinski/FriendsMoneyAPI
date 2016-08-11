@@ -64,6 +64,7 @@ module.exports = {
                      console.log(response);
                      if (response){
                      res.json(response)
+                     transactionService.updateUserTransaction(user)
                  }else {
                          res.status(400);
                      }

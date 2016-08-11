@@ -47,7 +47,6 @@ module.exports = {
         }else {
             transactionService.getListTransactionsPendencies(phone, function(transactions){
                 if (transactions){
-                   
                     res.json(transactions);
                 }else {
                     res.sendStatus(404);
@@ -61,13 +60,11 @@ module.exports = {
         if ( typeof phone == 'undefined'){
             res.json(400, { error: constant.error.msg_invalid_param});
         }else {
-            transactionService.getListTransactionsByUser(phone, function(response){
-              
-                if (!response.error){ 
-                
+            transactionService.getListTransactionsByUser(phone, function(response){  
+                if (response){     
                     res.json(response);
                 }else {    
-                    res.status(404).json(response);
+                    res.json({});
                 }
             })
         }

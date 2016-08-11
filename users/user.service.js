@@ -131,7 +131,6 @@ function registerUserFlagTrue (user, callback){
 					}else{
 						callback(userMongo);
 					}
-					
 				})
 			}
 		})

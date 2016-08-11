@@ -21,6 +21,7 @@ var service = {};
  service.deleteTransaction = deleteTransaction;
  service.updateTransaction = updateTransaction;
  service.getListTransactionsPendencies = getListTransactionsPendencies;
+ service.updateUserTransaction = updateUserTransaction;
 
 module.exports = service;
 
@@ -99,13 +100,12 @@ function getListTransactionsByUser (phone, callback){
                         callback({status:500, error: err });
                     }else if (transactions[0] == null || transactions[0] == undefined)
                     {
-                        logger.error(constant.error.msg_no_register);
-                        callback({error: constant.error.msg_no_register});
+                        callback();
                     }
                     else {
                         callback(transactions);
                     }
-                }).sort({createdAt : -1})
+                }).sort({updatedAt : -1})
             }else {
                 callback({status:404, error: "No users"});
             }
@@ -198,7 +198,8 @@ function deleteTransaction(id, callback){
  * @return error or a transaction
  */
 function updateTransaction (transaction, callback){
-    Transaction.findOneAndUpdate({_id : transaction._id},{ $set: {value: transaction.value, 
+    transaction.updatedAt = new Date();
+    Transaction.findOneAndUpdate({_id : transaction._id},{ $set: {value: transaction.value, updatedAt:transaction.updatedAt, 
         status:transaction.status, debtor:transaction.debtor, creditor:transaction.creditor}},
         function(err, transactionMongo){
             var newTransaction = new Transaction(transactionMongo);
@@ -220,4 +221,31 @@ function updateTransaction (transaction, callback){
                   callback( {status:404, error: constant.error.msg_no_register});
              }
         })
+}
+
+function updateUserTransaction (user){
+    getListTransactionsByUser(user.phone.value, function(transactionList){
+        console.log(transactionList);
+        if (transactionList && user.name){
+            transactionList.forEach(function(transaction){
+                if (transaction.debtor.phone.value == user.phone.value){
+                    if (transaction.debtor.name)
+                    transaction.debtor.name = user.name;
+                    else 
+                    console.log("Nothing to Change");
+                    
+                }else if (transaction.creditor.phone.value == user.phone.value){
+                     if (transaction.creditor.name)
+                    transaction.creditor.name = user.name;
+                    else 
+                    console.log("Nothing to Change");
+                }
+                transaction.save(function(err){
+                    console.log(err);
+                })
+            })
+        }else {
+            console.log("Nothing to Change");
+        }
+    })
 }
