@@ -57,9 +57,14 @@ function createTransaction(transaction, callback){
 function getListTransactionsPendencies (phone, callback){
      console.log(phone);
      userService.getUser(phone, function(user){
-         console.log(user);
+
+
             if(user){
-             Transaction.find({$and:[{$or:[{"debtor.phone.value":user.phone.value}, {"creditor.phone.value": user.phone.value}]},{"creator.phone.value": { $ne: user.phone.value }},{$or:[{status:"pending"},{status:"paymentConfirm"}]}]},function(err, transactions){
+
+            //((status == 'pending'&& usuario != creator)||(status:'paymentConfirm')) && ( usuário == debtor || usuário == creditor)
+             Transaction.find({$and:[{$or:[{$and:[{status:'pending'},{"creator.phone.value": { $ne: user.phone.value }}]},
+             {status:'paymentConfirm'}]},{$or:[{"debtor.phone.value":user.phone.value}, 
+             {"creditor.phone.value": user.phone.value}]}]},function(err, transactions){
                     
                     if (err) 
                     {
