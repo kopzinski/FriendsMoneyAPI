@@ -5,11 +5,12 @@
 var mongoose = require('mongoose');
 
 var transactionSchema = mongoose.Schema({
-	value: {type:Number, required:true},
+	valueTotal: {type:Number, required:true},
+	valuePaid: {type:Number},
 	creator:{ phone:{value:{type: String, required:true, ref: 'User'}}, name:{type:String}, registrationFlag:String},
 	status: String,
-	debtor: { phone:{value:{type: String, required:true, ref: 'User'}}, name:{type:String}, registrationFlag:String},
-	creditor: { phone:{value:{type: String, required:true, ref: 'User'}}, name:{type:String}, registrationFlag:String},
+	debtor: { phone:{value:{type: String, required:true, ref: 'User' }}, name:{type:String}, senderConfirm:Boolean, registrationFlag:String},
+	creditor: { phone:{value:{type: String, required:true, ref: 'User'}}, name:{type:String},senderConfirm:Boolean, registrationFlag:String},
 	createdAt: Date,
 	updatedAt: Date
 });

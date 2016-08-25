@@ -34,6 +34,8 @@ module.exports = service;
 
 function createTransaction(transaction, callback){
    var newTransaction = new Transaction(transaction)
+    // newTransaction.debtor.senderConfirm = false;
+    // newTransaction.creditor.senderConfirm = false;
       if (newTransaction.debtor.phone.value == newTransaction.creator.phone.value){
 	    userService.getValidNumberPhone(newTransaction.creditor.phone.value).then(function(validNumber){
             newTransaction.creditor.phone.value = "+"+validNumber;
@@ -53,12 +55,12 @@ function createTransaction(transaction, callback){
 }
 
 function getListTransactionsPendencies (phone, callback){
-
+     console.log(phone);
      userService.getUser(phone, function(user){
+         console.log(user);
             if(user){
              Transaction.find({$and:[{$or:[{"debtor.phone.value":user.phone.value}, {"creditor.phone.value": user.phone.value}]},{"creator.phone.value": { $ne: user.phone.value }},{$or:[{status:"pending"},{status:"paymentConfirm"}]}]},function(err, transactions){
-
-                    //  console.log(transactions)
+                    
                     if (err) 
                     {
                         console.log(err);
@@ -199,19 +201,24 @@ function deleteTransaction(id, callback){
  */
 function updateTransaction (transaction, callback){
     transaction.updatedAt = new Date();
-    Transaction.findOneAndUpdate({_id : transaction._id},{ $set: {value: transaction.value, updatedAt:transaction.updatedAt, 
+    if (!transaction.valuePaid){
+        transaction.valuePaid = 0;
+    }
+    Transaction.findOneAndUpdate({_id : transaction._id},{ $set: {valueTotal: transaction.valueTotal,valuePaid:transaction.valuePaid, updatedAt:transaction.updatedAt, 
         status:transaction.status, debtor:transaction.debtor, creditor:transaction.creditor}},
         function(err, transactionMongo){
             var newTransaction = new Transaction(transactionMongo);
+                console.log("transaction");
+                console.log(newTransaction);
              if (err){
                    logger.error(constant.error.msg_mongo_error+": "+err);
-                    callback({status: 500, error: err });
+                   callback({status: 500, error: err });
                   }
-             if(newTransaction.value == transaction.value  && newTransaction.status == transaction.status && newTransaction.creditor.equals(transaction.creditor) &&  newTransaction.debtor.equals(transaction.debtor))
+             if(newTransaction.valuePaid == transaction.valuePaid && newTransaction.valueTotal == transaction.valueTotal  && newTransaction.status == transaction.status && newTransaction.creditor.equals(transaction.creditor) &&  newTransaction.debtor.equals(transaction.debtor))
              {
                  callback(constant.error.msg_reg_exists_update);
              }
-             else if (newTransaction.value != transaction.value || newTransaction.status != transaction.status ||  !newTransaction.creditor.equals(transaction.creditor) ||  !newTransaction.debtor.equals(transaction.debtor))
+             else if (newTransaction.valueTotal != transaction.valueTotal || newTransaction.status != transaction.status ||  !newTransaction.creditor.equals(transaction.creditor) ||  !newTransaction.debtor.equals(transaction.debtor)|| newTransaction.valuePaid == transaction.valuePaid)
              {
                 //  console.log(newTransaction);
 
@@ -229,17 +236,22 @@ function updateUserTransaction (user){
         if (transactionList && user.name){
             transactionList.forEach(function(transaction){
                 if (transaction.debtor.phone.value == user.phone.value){
-                    if (!transaction.debtor.name)
+                    if (!transaction.debtor.name){
                     transaction.debtor.name = user.name;
-                    else 
+                    transaction.debtor.registrationFlag = true;
+                    }
+                     else 
                     console.log("Nothing to Change");
 
                 }else if (transaction.creditor.phone.value == user.phone.value){
-                     if (!transaction.creditor.name)
+                     if (!transaction.creditor.name){
                     transaction.creditor.name = user.name;
+                    transaction.creditor.registrationFlag = true;
+                     }
                     else 
                     console.log("Nothing to Change");
                 }
+                
                 transaction.save(function(err){
                     if (err)console.log(err);
                 })

@@ -57,7 +57,10 @@ module.exports = {
         }
     }, 
     registerUser:function(req, res, next){
+        console.log("Aqui");
+        console.log(req.body);
           if (req.body.user){
+              
             var user = req.body.user;
              if ( typeof user.phone != 'undefined' || typeof user.deviceId != 'undefined'){
                  userService.registerUserFlagTrue(user,function(response){

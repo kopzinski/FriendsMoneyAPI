@@ -60,6 +60,7 @@ function deleteUser (phone, callback){
 }
 
 function registerUserFlagFalse (transaction, callback){
+	console.log(transaction)
 	if (transaction.debtor == transaction.creator){
 		var user = {
 			phone:transaction.creditor.phone,
@@ -127,7 +128,7 @@ function registerUserFlagTrue (user, callback){
 				userMongo.registrationFlag = true;
 				userMongo.save(function(err){
 					if (err) {
-					callback({error: err});
+						callback({error: err});
 					}else{
 						callback(userMongo);
 					}

@@ -6,17 +6,17 @@ var express = require('express'),
 module.exports = {
     
     createTransaction:function (req, res, next) {
-     
+        console.log(req.body);
         var newTransaction = new Transaction({
             creator:req.body.creator,
-            value: req.body.value,
+            valueTotal: req.body.valueTotal,
             status: req.body.status,
             debtor: req.body.debtor,
             creditor: req.body.creditor
         });
         
 
-        if (typeof newTransaction.value  == 'undefined' ||  typeof newTransaction.status  == 'undefined' || typeof newTransaction.debtor == 'undefined'|| typeof newTransaction.creditor == "undefined") {
+        if (typeof newTransaction.valueTotal  == 'undefined' ||  typeof newTransaction.status  == 'undefined' || typeof newTransaction.debtor == 'undefined'|| typeof newTransaction.creditor == "undefined") {
             res.json({status:400,  error: constant.error.msg_invalid_param});
         }else {
             transactionService.createTransaction(newTransaction, function(response){
@@ -47,6 +47,7 @@ module.exports = {
         }else {
             transactionService.getListTransactionsPendencies(phone, function(transactions){
                 if (transactions){
+                    console.log(transactions);
                     res.json(transactions);
                 }else {
                     res.sendStatus(404);
@@ -101,9 +102,10 @@ module.exports = {
     },
 
     updateTransaction:function (req, res, next) {
-     
+            console.log(req.body);
          var updateTransaction = new Transaction(req.body);
-        if ( typeof updateTransaction.value  == 'undefined' ||  typeof updateTransaction.status  == 'undefined' || typeof updateTransaction.debtor == 'undefined'|| typeof updateTransaction.creditor == "undefined") {
+         console.log(updateTransaction);
+        if ( typeof updateTransaction.valueTotal  == 'undefined' ||  typeof updateTransaction.status  == 'undefined' || typeof updateTransaction.debtor == 'undefined'|| typeof updateTransaction.creditor == "undefined") {
             res.status(400).json({ error: constant.error.msg_invalid_param});
         }else {
             transactionService.updateTransaction(updateTransaction, function(response){

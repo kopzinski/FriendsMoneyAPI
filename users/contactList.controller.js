@@ -13,9 +13,10 @@ module.exports = controller;
 
 
 function getContact (req,res){
+    console.log("fui chamado");
     var newContacts = [];
-    //console.log(req.body);
     var contacts = req.body.contacts;  
+    console.log(req.body);
     async.map(contacts, FilterContacts, function(err, results){
     //   console.log(results);
        res.json(results);
