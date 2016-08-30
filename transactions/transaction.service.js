@@ -32,6 +32,7 @@ module.exports = service;
  * @return a message with error or success
  */
 
+
 function createTransaction(transaction, callback){
    var newTransaction = new Transaction(transaction)
     // newTransaction.debtor.senderConfirm = false;
@@ -60,7 +61,6 @@ function getListTransactionsPendencies (phone, callback){
 
 
             if(user){
-
             //((status == 'pending'&& usuario != creator)||(status:'paymentConfirm')) && ( usuário == debtor || usuário == creditor)
              Transaction.find({$and:[{$or:[{$and:[{status:'pending'},{"creator.phone.value": { $ne: user.phone.value }}]},
              {status:'paymentConfirm'}]},{$or:[{"debtor.phone.value":user.phone.value}, 

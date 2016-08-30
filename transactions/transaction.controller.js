@@ -15,6 +15,7 @@ module.exports = {
             creditor: req.body.creditor
         });
         
+        
 
         if (typeof newTransaction.valueTotal  == 'undefined' ||  typeof newTransaction.status  == 'undefined' || typeof newTransaction.debtor == 'undefined'|| typeof newTransaction.creditor == "undefined") {
             res.json({status:400,  error: constant.error.msg_invalid_param});
@@ -102,19 +103,38 @@ module.exports = {
     },
 
     updateTransaction:function (req, res, next) {
-            console.log(req.body);
-         var updateTransaction = new Transaction(req.body);
-         console.log(updateTransaction);
-        if ( typeof updateTransaction.valueTotal  == 'undefined' ||  typeof updateTransaction.status  == 'undefined' || typeof updateTransaction.debtor == 'undefined'|| typeof updateTransaction.creditor == "undefined") {
+        console.log(req.body);
+         var transaction = new Transaction(req.body);
+         console.log(transaction);
+        if ( typeof transaction.valueTotal  == 'undefined' ||  typeof transaction.status  == 'undefined' || typeof transaction.debtor == 'undefined'|| typeof transaction.creditor == "undefined") {
             res.status(400).json({ error: constant.error.msg_invalid_param});
         }else {
-            transactionService.updateTransaction(updateTransaction, function(response){
-                if (response){
-                    res.json(response);
-                }else {
-                    res.sendStatus(400);
-                }
-            })
+            if (transaction.valueTotal == transaction.valuePaid){
+                transactionService.updateTransaction(transaction, function(response){
+                    if (response){
+                        res.json(response);
+                    }else {
+                        res.sendStatus(400);
+                    }
+                })
+            }else {
+                transactionService.updateTransaction(transaction, function(response){
+                    if (response){
+                        var newTransaction = new Transaction(transaction);
+                        newTransaction.valueTotal = newTransaction.valueTotal - newTransaction.valuePaid;
+                        newTransaction.valuePaid = undefined;
+                        transactionService.createTransaction(newTransaction, function(response){
+                            if (response){
+                                res.json(response)
+                            }else {
+                                res.sendStatus(400);
+                            }
+                        })
+                    }else {
+                        res.sendStatus(400);
+                    }
+                }) 
+            }
         }
     }
 }
