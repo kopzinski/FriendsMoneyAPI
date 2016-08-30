@@ -123,6 +123,7 @@ module.exports = {
                         var newTransaction = new Transaction(transaction);
                         newTransaction.valueTotal = newTransaction.valueTotal - newTransaction.valuePaid;
                         newTransaction.valuePaid = undefined;
+                        newTransaction.status = 'accepted';
                         transactionService.createTransaction(newTransaction, function(response){
                             if (response){
                                 res.json(response)
