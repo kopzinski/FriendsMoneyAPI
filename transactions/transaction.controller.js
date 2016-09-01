@@ -103,13 +103,14 @@ module.exports = {
     },
 
     updateTransaction:function (req, res, next) {
-        console.log(req.body);
+
          var transaction = new Transaction(req.body);
-         console.log(transaction);
+
         if ( typeof transaction.valueTotal  == 'undefined' ||  typeof transaction.status  == 'undefined' || typeof transaction.debtor == 'undefined'|| typeof transaction.creditor == "undefined") {
             res.status(400).json({ error: constant.error.msg_invalid_param});
         }else {
-            if (transaction.valueTotal == transaction.valuePaid){
+            console.log(transaction);
+            if (transaction.valuePaid == undefined || transaction.valueTotal == transaction.valuePaid || (transaction.status == "accepted") || (transaction.status == "paymentConfirm")){
                 transactionService.updateTransaction(transaction, function(response){
                     if (response){
                         res.json(response);
@@ -118,13 +119,20 @@ module.exports = {
                     }
                 })
             }else {
+                console.log("Entrou no else");
                 transactionService.updateTransaction(transaction, function(response){
                     if (response){
-                        var newTransaction = new Transaction(transaction);
-                        newTransaction.valueTotal = newTransaction.valueTotal - newTransaction.valuePaid;
-                        newTransaction.valuePaid = undefined;
-                        newTransaction.status = 'accepted';
+                        var newTransaction = {
+                            valuePaid: undefined,
+                            status: 'accepted',
+                            valueTotal: transaction.valueTotal - transaction.valuePaid,
+                            debtor: transaction.debtor,
+                            creditor: transaction.creditor,
+                            creator:transaction.creator
+                        }
+                        console.log(newTransaction);
                         transactionService.createTransaction(newTransaction, function(response){
+                            console.log(response);
                             if (response){
                                 res.json(response)
                             }else {

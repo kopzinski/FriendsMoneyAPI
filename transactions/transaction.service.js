@@ -44,7 +44,7 @@ function createTransaction(transaction, callback){
 	}else {
 		userService.getValidNumberPhone(newTransaction.debtor.phone.value).then(function(validNumber){
             newTransaction.debtor.phone.value = "+"+validNumber;
-            console.log("debtor",newTransaction.debtor.phone.value);
+
         })
 	}
     newTransaction.save(function(err, transaction){
@@ -213,8 +213,6 @@ function updateTransaction (transaction, callback){
         status:transaction.status, debtor:transaction.debtor, creditor:transaction.creditor}},
         function(err, transactionMongo){
             var newTransaction = new Transaction(transactionMongo);
-                console.log("transaction");
-                console.log(newTransaction);
              if (err){
                    logger.error(constant.error.msg_mongo_error+": "+err);
                    callback({status: 500, error: err });
@@ -226,7 +224,6 @@ function updateTransaction (transaction, callback){
              else if (newTransaction.valueTotal != transaction.valueTotal || newTransaction.status != transaction.status ||  !newTransaction.creditor.equals(transaction.creditor) ||  !newTransaction.debtor.equals(transaction.debtor)|| newTransaction.valuePaid == transaction.valuePaid)
              {
                 //  console.log(newTransaction);
-
                  callback(constant.success.msg_update_success);
              }
              else {
