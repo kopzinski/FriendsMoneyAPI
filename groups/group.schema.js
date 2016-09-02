@@ -11,7 +11,7 @@ var groupSchema = mongoose.Schema({
 		phone:{value:{type: String, required:true, ref: 'User' }},
 		flagGroup: Boolean
 	}],
-	creator:{phone:{value:{type: String, required:true, ref: 'User' }}},
+	creator:{type: String, required:true, ref: 'User.phone.value' },
 	updatedAt:Date,
 	createdAt:Date,
 	finalizedAt:Date

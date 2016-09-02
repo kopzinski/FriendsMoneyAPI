@@ -5,14 +5,14 @@ var express = require('express'),
 module.exports = {
     
     createGroup:function (req, res, next) {
-        
+        console.log(req.body);
         var newGroup = ({
             creator:req.body.creator,
             members:req.body.members,
             title:req.body.title,
         })
 
-        if (typeof newGroup.creator == 'undefined' || newGroup.members.length == 0 || typeof newGroup.name == 'undefined'){
+        if (typeof newGroup.creator == 'undefined' || newGroup.members.length == 0 || typeof newGroup.title == 'undefined'){
             res.status(400).json({error: constant.error.msg_invalid_param});
         }else {
             groupService.createGroup(newGroup).then(function(response){
