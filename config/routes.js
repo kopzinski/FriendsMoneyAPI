@@ -8,6 +8,7 @@ var transactionController = require('../transactions/transaction.controller');
 var userController = require('../users/user.controller');
 var router = express.Router();
 var testeController = require('../users/contactList.controller');
+var groupController = require('../groups/group.controller');
 
 router.get('/',function(req, res){
     res.send("Hello World");
@@ -29,5 +30,8 @@ router.get('/transaction/:id',transactionController.getTransaction);
 router.delete('/transaction/:id', transactionController.deleteTransaction);
 router.put('/transaction', transactionController.updateTransaction);
 router.post('/transaction', transactionController.createTransaction);
+
+//Groups
+router.post('/group', groupController.createGroup);
 
 module.exports = router;  

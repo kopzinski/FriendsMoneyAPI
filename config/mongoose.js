@@ -6,6 +6,7 @@ var config   = require('./config');
 
 function createMongooseConnection(cb) {
     // create the database connection
+    mongoose.Promise = global.Promise;
     mongoose.connect(config.mongodb.dbURI);
 
     // when successfully connected
