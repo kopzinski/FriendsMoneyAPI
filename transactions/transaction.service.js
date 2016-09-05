@@ -20,7 +20,6 @@ var service = {};
  service.getTransaction = getTransaction;
  service.deleteTransaction = deleteTransaction;
  service.updateTransaction = updateTransaction;
- service.getListTransactionsPendencies = getListTransactionsPendencies;
  service.updateUserTransaction = updateUserTransaction;
 
 module.exports = service;
@@ -55,45 +54,7 @@ function createTransaction(transaction, callback){
     })
 }
 
-function getListTransactionsPendencies (phone, callback){
-     console.log(phone);
-     userService.getUser(phone, function(user){
 
-
-            if(user){
-            //((status == 'pending'&& usuario != creator)||(status:'paymentConfirm')) && ( usuário == debtor || usuário == creditor)
-             Transaction.find({$and:[{$or:[{$and:[{status:'pending'},{"creator.phone.value": { $ne: user.phone.value }}]},
-             {status:'paymentConfirm'}]},{$or:[{"debtor.phone.value":user.phone.value}, 
-             {"creditor.phone.value": user.phone.value}]}]},function(err, transactions){
-                    
-                    if (err) 
-                    {
-                        console.log(err);
-                        logger.error(constant.error.msg_mongo_error+": "+err);
-                        callback({status:500, error: err });
-                    }else if (transactions[0] == null || transactions[0] == undefined)
-                    {
-                        logger.error(constant.error.msg_no_register);
-                        callback({status:404, error: constant.error.msg_no_register});
-                    }
-                    else {
-                        // console.log(transactions);
-                        callback(transactions);    
-                    }
-                }).sort({createdAt : 1});
-            }else {
-                callback({status:404, error: "No users"});
-            }
-       
-    })
-}
-
-/**
- * This method receive an user_id parameter (mongo id) and find all transactions with a debtor or a creditor that match with
- * the user_id parameter
- * @param user_id
- * @return error or a list with transactions
- */
 function getListTransactionsByUser (phone, callback){
 
     userService.getUser(phone,function(user){

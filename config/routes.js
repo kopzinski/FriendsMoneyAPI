@@ -9,7 +9,7 @@ var userController = require('../users/user.controller');
 var router = express.Router();
 var testeController = require('../users/contactList.controller');
 var groupController = require('../groups/group.controller');
-
+var pendencieController = require('../pendings/pending.controller');
 router.get('/',function(req, res){
     res.send("Hello World");
 })
@@ -24,7 +24,6 @@ router.post('/contacts', testeController.getContact);
 
 //Transactions
 router.get('/transactions', transactionController.getListTransactions);
-router.get('/pendingTransactions/:phone', transactionController.getListTransactionPendencies);
 router.get('/transactions/:phone', transactionController.getListTransactionsByUser);
 router.get('/transaction/:id',transactionController.getTransaction);
 router.delete('/transaction/:id', transactionController.deleteTransaction);
@@ -34,4 +33,6 @@ router.post('/transaction', transactionController.createTransaction);
 //Groups
 router.post('/group', groupController.createGroup);
 
+//Pendencies
+router.get('/pendingTransactions/:phone', pendencieController.getListPendencies);
 module.exports = router;  

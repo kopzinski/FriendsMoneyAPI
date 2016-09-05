@@ -14,9 +14,6 @@ module.exports = {
             debtor: req.body.debtor,
             creditor: req.body.creditor
         });
-        
-        
-
         if (typeof newTransaction.valueTotal  == 'undefined' ||  typeof newTransaction.status  == 'undefined' || typeof newTransaction.debtor == 'undefined'|| typeof newTransaction.creditor == "undefined") {
             res.json({status:400,  error: constant.error.msg_invalid_param});
         }else {
@@ -46,12 +43,24 @@ module.exports = {
         if ( typeof phone == 'undefined'){
             res.json(400, { error: constant.error.msg_invalid_param});
         }else {
-            transactionService.getListTransactionsPendencies(phone, function(transactions){
-                if (transactions){
-                    console.log(transactions);
-                    res.json(transactions);
+            transactionService.getListTransactionPendingStatus(phone, function(err, transactionsPending){
+                if (transactionsPending){
+                    transactionService.getListTransactionPaymentConfirmStatus(phone, function(err, transactionsPaymentConfirm){
+                        if (transactionsPaymentConfirm){
+                            res.json(transactionsPending.concat(transactionsPaymentConfirm));
+                        }else {
+                            res.json(transactionsPending)
+                        }
+                    })
+
                 }else {
-                    res.sendStatus(404);
+                    transactionService.getListTransactionPaymentConfirmStatus(phone, function(err, transactionsPaymentConfirm){
+                        if (transactionsPaymentConfirm){
+                            res.json(transactionsPaymentConfirm);
+                        }else {
+                            res.json(404)
+                        }
+                    })
                 }
             })
         }  
