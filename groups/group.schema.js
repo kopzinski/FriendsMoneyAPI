@@ -9,6 +9,7 @@ var groupSchema = mongoose.Schema({
     members:[{
 		name:String,
 		phone:{value:{type: String, required:true, ref: 'User' }},
+		registrationFlag:Boolean,
 		flagGroup: Boolean
 	}],
 	creator:{type: String, required:true, ref: 'User.phone.value' },

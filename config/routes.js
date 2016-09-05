@@ -33,5 +33,6 @@ router.post('/transaction', transactionController.createTransaction);
 
 //Groups
 router.post('/group', groupController.createGroup);
+router.get('/groups/:phone', groupController.getGroupsByUser);
 
 module.exports = router;  
