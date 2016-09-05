@@ -5,7 +5,7 @@ var express = require('express'),
 module.exports = {
     
     createGroup:function (req, res, next) {
-        console.log(req.body);
+
         var newGroup = ({
             creator:req.body.creator,
             members:req.body.members,
@@ -21,7 +21,25 @@ module.exports = {
                 res.status(404).json(err)
             })
         }
+    },
+
+    getGroupsByUser:function (req, res, next) {
+        
+        var phone = req.params.phone;
+        
+        if ( typeof phone == 'undefined'){
+            res.json(400, { error: constant.error.msg_invalid_param});
+        }else {
+            groupService.getGroupsByUser(phone, function(response){  
+                if (response){     
+                    res.json(response);
+                }else {    
+                    res.json({});
+                }
+            })
+        }
     }
+
 }
         
         

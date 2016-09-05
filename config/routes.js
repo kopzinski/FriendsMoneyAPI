@@ -32,6 +32,7 @@ router.post('/transaction', transactionController.createTransaction);
 
 //Groups
 router.post('/group', groupController.createGroup);
+router.get('/groups/:phone', groupController.getGroupsByUser);
 
 //Pendencies
 router.get('/pendingTransactions/:phone', pendencieController.getListPendencies);
