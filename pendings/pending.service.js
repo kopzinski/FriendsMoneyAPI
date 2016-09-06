@@ -10,22 +10,22 @@ var Transaction = require('../transactions/transaction.schema'),
     User        = require('../users/user.schema'),
     userService = require('../users/user.service'),
     async       = require('async'),
-    constant    = require('../transactions/transaction.constants.json'),
+    constant    = require('./pending.constants.json'),
     Group       = require('../groups/group.schema');
-//export all methods to be accessed externally
 
+//export all methods to be accessed externally
 var service = {};
  service.getListTransactionPendingStatus = getListTransactionPendingStatus;
  service.getListTransactionPaymentConfirmStatus = getListTransactionPaymentConfirmStatus;
  service.addAtributteStatusPendencie = addAtributteStatusPendencie;
-
+ service.getListGroupAcceptedPendencies = getListGroupAcceptedPendencies;
 module.exports = service;
 
 function getListTransactionPendingStatus (phone, callback){
 
             //((status == 'pending' && usuario != creator) && (( usuário == debtor || usuário == creditor)))
-            Transaction.find({$and:[{status:'pending'},{"creator.phone.value": { $ne: user.phone.value }},{$or:[{"debtor.phone.value":user.phone.value}, 
-             {"creditor.phone.value": user.phone.value}]}]},function(err, transactions){
+            Transaction.find({$and:[{status:'pending'},{"creator.phone.value": { $ne: phone }},{$or:[{"debtor.phone.value":phone}, 
+             {"creditor.phone.value": phone}]}]},function(err, transactions){
                 if (err) 
                     {
                         console.log(err);
@@ -54,7 +54,6 @@ function addAtributteStatusPendencie (status, arrayTransaction, callback){
 
         itemsProcessed++;
         if(itemsProcessed == arrayTransaction.length){
-            console.log(newArray);
             callback(newArray);
         }
     } 
@@ -68,8 +67,8 @@ function addAtributteStatusPendencie (status, arrayTransaction, callback){
  * @return error or a list with transactions
  */
 function getListTransactionPaymentConfirmStatus (phone, callback){
-            Transaction.find({$and:[{status:'paymentConfirm'},{$or:[{$and:[{"debtor.phone.value":user.phone.value},{"debtor.senderConfirm":false}]}, 
-             {$and:[{"creditor.phone.value":user.phone.value},{"creditor.senderConfirm":false}]}]}]},function(err, transactions){
+            Transaction.find({$and:[{status:'paymentConfirm'},{$or:[{$and:[{"debtor.phone.value":phone},{"debtor.senderConfirm":false}]}, 
+             {$and:[{"creditor.phone.value":phone},{"creditor.senderConfirm":false}]}]}]},function(err, transactions){
                     if (err) 
                     {
                         console.log(err);
@@ -89,20 +88,21 @@ function getListTransactionPaymentConfirmStatus (phone, callback){
 }
 
 function getListGroupAcceptedPendencies (phone, callback){
-            Group.find({},function(err, transactions){
+
+            Group.find({members: {$elemMatch:{"phone.value":phone, flagGroup:false}}},function(err, groups){
                     if (err) 
                     {
                         console.log(err);
                         logger.error(constant.error.msg_mongo_error+": "+err);
                         callback(err, null);
-                    }else if (transactions[0] == null || transactions[0] == undefined)
+                    }else if (groups[0] == null || groups[0] == undefined)
                     {
                         logger.error(constant.error.msg_no_register);
                        callback(null, null);
                     }
                     else {
-                        addAtributteStatusPendencie("paymentConfirm",transactions,function(transactions){
-                           callback(null, transactions);  
+                       addAtributteStatusPendencie("createGroup",groups,function(groups){
+                           callback(null, groups);  
                        })  
                     }
                 }).sort({createdAt : 1});

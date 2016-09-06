@@ -2,7 +2,9 @@
     pendingService = require('./pending.service'),
     constant = require('../transactions/transaction.constants.json'),
     Transaction = require('../transactions/transaction.schema'),
-    userService = require('../users/user.schema');
+    async = require('async'),
+    userService = require('../users/user.service'),
+    User = require('../users/user.schema');
 
 module.exports = {
  getListPendencies:function(req, res, next){
@@ -12,26 +14,54 @@ module.exports = {
         }else {
             userService.getUser(phone,function(user){
                 if (user){
-                    pendingService.getListTransactionPendingStatus(user.phone, function(err, transactionsPending){
-                    if (transactionsPending){
-                        pendingService.getListTransactionPaymentConfirmStatus(user.phone, function(err, transactionsPaymentConfirm){
-                            if (transactionsPaymentConfirm){
-                                res.json(transactionsPending.concat(transactionsPaymentConfirm));
-                            }else {
-                                res.json(transactionsPending)
-                            }
-                        })
+                    async.waterfall([
+                        function(callback){
+                            pendingService.getListTransactionPendingStatus(user.phone.value, function(err, transactionsPending){
+                                if (err){
+                                    callback(err, null)
+                                }else {
+                                    callback(null, transactionsPending);
+                                }
+                            })
+                        },
+                        function(transactionsPending, callback){
 
-                    }else {
-                        pendingService.getListTransactionPaymentConfirmStatus(user.phone, function(err, transactionsPaymentConfirm){
-                            if (transactionsPaymentConfirm){
-                                res.json(transactionsPaymentConfirm);
-                            }else {
-                                res.json(404)
+
+                                pendingService.getListTransactionPaymentConfirmStatus(user.phone.value, function(err, transactionsPaymentConfirm){
+                                    if (err){
+                                        callback(err, null)
+                                    }else {
+                                        if (transactionsPending.length > 0){
+                                            callback(null, transactionsPaymentConfirm.concat(transactionsPending));
+                                        }else {
+                                            callback(null, transactionsPaymentConfirm);
+                                        }
+                                        
+                                    }
+                                })
+                        },
+                        function(transactionsPaymentConfirm, callback){
+
+                                pendingService.getListGroupAcceptedPendencies(user.phone.value, function(err, pendenciesGroupsCreated){
+                                    if (err){
+                                        callback(err, null)
+                                    }else {
+                                        if (transactionsPaymentConfirm.length > 0){
+                                            callback(null, pendenciesGroupsCreated.concat(transactionsPaymentConfirm));
+                                        }else {
+                                            callback(null, pendenciesGroupsCreated);
+                                        }
+                                        
+                                    }
+                                })
                             }
-                        })
-                    }
-                })
+                    ], function (err, result) {
+                    	if(err){
+                            res.status(404).json(err);
+                        }else {
+                            res.json(result);
+                        }
+                    });
                 }else {
                     res.status(404).json({error:"No Users"});
                 }

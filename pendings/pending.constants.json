@@ -1,0 +1,87 @@
+{
+   "error" : {  
+ 
+      "msg_invalid_param"   : {  
+ 
+         "result"   : "error",
+         "message"  : "Invalid request parameters."
+ 
+      },
+ 
+      "msg_empty_param"     : {
+ 
+        "result"    :"error",
+        "message"   :"Parameters should not be empty."
+ 
+      },
+ 
+      "msg_reg_failure"     : {
+ 
+        "result"    :"error",
+        "message"   :"Registration failure."
+ 
+      },
+ 
+      "msg_reg_exists"  : {
+ 
+        "result"    :"error",
+        "message"   :"Pending already created."
+ 
+      },
+      "msg_reg_exists_update":{
+          "result": "error",
+          "message": "Nothing to Update"
+      },
+ 
+      "msg_del_failure" : {
+ 
+         "result" : "error",
+         "message" : "Unable to remove a Pending"
+ 
+      },
+       "msg_find_failure" : {
+ 
+         "result" : "error",
+         "message" : "Unable to find a Pending"
+ 
+      },
+      "msg_no_register" : {
+ 
+         "result" : "error",
+         "message" : "Pending not found"
+      },
+      "msg_empty_database" : {
+ 
+         "result" : "error",
+         "message" : "There is no pendencies yet"
+      },
+      "msg_mongo_error":{
+        "result": "error",
+        "message": "Find an error"
+      }
+ 
+   },
+   
+   "success" : {
+ 
+      "msg_reg_success" : {
+ 
+        "result"    : "success",
+        "message"   : "Pending successfully Created."
+ 
+      },
+ 
+        "msg_del_success"  : {
+ 
+         "result" :  "success",
+         "message" : "Pending successfully removed"
+ 
+        },
+        "msg_update_success" : {
+ 
+         "result"    : "success",
+         "message"   : "Pending successfully updated."
+ 
+      }
+   }
+}

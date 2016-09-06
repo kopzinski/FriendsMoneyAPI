@@ -28,12 +28,18 @@ function createGroup(group){
        async.map(newGroup.members, filterUsers, function(err, results){
        console.log(results);
        newGroup.members = results;
-       newGroup.save(function(err){
+       userService.getValidNumberPhone(newGroup.creator).then(function(numberValid){
+            newGroup.creator = "+"+numberValid;
+            newGroup.save(function(err){
            if (err) deferred.reject(err);
            else {
                deferred.resolve(constant.success.msg_reg_success);
            }
        })
+    })
+       
+       
+       
     });
 	    
 	}else {

@@ -35,5 +35,5 @@ router.post('/group', groupController.createGroup);
 router.get('/groups/:phone', groupController.getGroupsByUser);
 
 //Pendencies
-router.get('/pendingTransactions/:phone', pendencieController.getListPendencies);
+router.get('/pending/:phone', pendencieController.getListPendencies);
 module.exports = router;  
