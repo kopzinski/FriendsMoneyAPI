@@ -31,10 +31,14 @@ module.exports = {
                                     if (err){
                                         callback(err, null)
                                     }else {
-                                        if (transactionsPending.length > 0){
+                                        if (transactionsPending && transactionsPaymentConfirm){
                                             callback(null, transactionsPaymentConfirm.concat(transactionsPending));
-                                        }else {
+                                        }else if (transactionsPaymentConfirm){
                                             callback(null, transactionsPaymentConfirm);
+                                        }else if(transactionsPending){
+                                            callback(null, transactionsPending);
+                                        }else {
+                                            callback(null, null);
                                         }
                                         
                                     }
@@ -46,10 +50,14 @@ module.exports = {
                                     if (err){
                                         callback(err, null)
                                     }else {
-                                        if (transactionsPaymentConfirm.length > 0){
+                                        if (transactionsPaymentConfirm && pendenciesGroupsCreated){
                                             callback(null, pendenciesGroupsCreated.concat(transactionsPaymentConfirm));
-                                        }else {
+                                        }else if(pendenciesGroupsCreated){
                                             callback(null, pendenciesGroupsCreated);
+                                        }else if(transactionsPaymentConfirm){
+                                            callback(null, transactionsPaymentConfirm);
+                                        }else {
+                                            callback(null, null);
                                         }
                                         
                                     }
@@ -59,11 +67,15 @@ module.exports = {
                     	if(err){
                             res.status(404).json(err);
                         }else {
+                            if (result)
                             res.json(result);
+                            else {
+                                res.status(404).json({error:"Não há pendências para esse usuário"});
+                            }
                         }
                     });
                 }else {
-                    res.status(404).json({error:"No Users"});
+                    res.status(404).json({error:"Número inexistente no banco"});
                 }
             })
             
