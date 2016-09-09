@@ -115,7 +115,7 @@ function registerUserFlagTrue (user, callback){
 				})
 			}else if (userMongo.name == user.name && userMongo.phone.value == user.phone.value  && userMongo.registrationId == user.registrationId && userMongo.deviceId == user.deviceId){
 				console.log("Objetos iguais no banco")
-				callback(constants.error.msg_reg_exists_update);
+				callback(userMongo);
 			}else {
 				if (user.name)
 				userMongo.name = user.name;

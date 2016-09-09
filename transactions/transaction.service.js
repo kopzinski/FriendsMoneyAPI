@@ -195,7 +195,6 @@ function updateTransaction (transaction, callback){
 
 function updateUserTransaction (user){
     getListTransactionsByUser(user.phone.value, function(transactionList){
-
         if (transactionList && user.name){
             transactionList.forEach(function(transaction){
                 if (transaction.debtor.phone.value == user.phone.value){

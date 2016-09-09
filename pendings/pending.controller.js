@@ -25,8 +25,6 @@ module.exports = {
                             })
                         },
                         function(transactionsPending, callback){
-
-
                                 pendingService.getListTransactionPaymentConfirmStatus(user.phone.value, function(err, transactionsPaymentConfirm){
                                     if (err){
                                         callback(err, null)
@@ -67,11 +65,7 @@ module.exports = {
                     	if(err){
                             res.status(404).json(err);
                         }else {
-                            if (result)
                             res.json(result);
-                            else {
-                                res.status(404).json({error:"Não há pendências para esse usuário"});
-                            }
                         }
                     });
                 }else {
