@@ -88,3 +88,10 @@ function getGroupsByUser(user, callback){
         }     
 }
 
+function acceptGroup (userPhone, id_group){
+
+}
+
+function denyGroup (userPhone, id_group){
+
+}
