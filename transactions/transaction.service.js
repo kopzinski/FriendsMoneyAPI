@@ -138,10 +138,10 @@ function deleteTransaction(id, callback){
       Transaction.findById(id, function(err, transaction){
           if (err)
           {
-              logger.error(constant.error.msg_mongo_error+": "+err);
+               logger.error(constant.error.msg_mongo_error+": "+err);
                callback({status: 500, error: err });
           }else if(transaction == null || transaction == undefined) {
-              callback({status:404, error: constant.error.msg_no_register});
+               callback({status:404, error: constant.error.msg_no_register});
           }else 
           {
               transaction.remove(function(err, transaction){

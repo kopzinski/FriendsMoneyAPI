@@ -16,6 +16,7 @@ var Group       = require('./group.schema'),
 var service = {};
 service.createGroup = createGroup;
 service.getGroupsByUser = getGroupsByUser;
+service.deleteGroup = deleteGroup;
 //service.getGruposByUser = getGruposByUser;
 
 module.exports = service;
@@ -56,13 +57,13 @@ function filterUsers(user, callback){
             user.name = response.name;
             user.phone.value = response.phone.value;
             user.registrationFlag = response.registrationFlag;
-            user.flagGroup = false;
+            user.flagCreate = false;
             return callback(null, user)
         }else {
             console.log("else");
             userService.getValidNumberPhone(user.phone.value).then(function(validNumber){
             user.phone.value = "+"+validNumber;
-            user.flagGroup = false;
+            user.flagCreate = false;
             user.registrationFlag = false;
             return callback(null, user)
     })
@@ -86,5 +87,33 @@ function getGroupsByUser(user, callback){
         }else {
             callback({status:404, error: "No groups"});
         }     
+}
+
+
+function deleteGroup(id, phone, callback){
+      Group.findById(id, function(err, group){
+          if (err){
+              logger.error(constant.error.msg_mongo_error+": "+err);
+              callback({status: 500, error: err });
+          }else if(group == null || group == undefined) {
+              callback({status:404, error: constant.error.msg_no_register});
+          }else{
+              for(var i = 0; i < group.members.length; i++){
+                if(group.members[i].phone.value == phone){
+                    group.members[i].flagFinalized = true;
+                }else{
+                    group.members[i].flagFinalized = false;
+                }                  
+              }
+              group.save(function(err, success){
+                  if(err){
+                      logger.error(constant.error.msg_mongo_error+": "+err);
+                      callback({status: 500, error: err });
+                  }else{
+                      callback(success);
+                  }
+              })
+          }
+      })
 }
 
