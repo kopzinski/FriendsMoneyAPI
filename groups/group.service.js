@@ -16,6 +16,7 @@ var Group       = require('./group.schema'),
 var service = {};
 service.createGroup = createGroup;
 service.getGroupsByUser = getGroupsByUser;
+service.deleteGroup = deleteGroup;
 //service.getGruposByUser = getGruposByUser;
 
 module.exports = service;
@@ -25,11 +26,37 @@ function createGroup(group){
    var deferred = Q.defer();
    var newGroup = new Group(group);
    if(newGroup){
-       async.map(newGroup.members, filterUsers, function(err, results){
+     async.map(newGroup.members, function(user, callback){
+        userService.getUser(user.phone.value, function(response){
+        if (response){
+            console.log(newGroup.creator);
+            console.log("if");
+            user._id = response._id;
+            user.name = response.name;
+            user.phone.value = response.phone.value;
+            user.registrationFlag = response.registrationFlag;
+            if (newGroup.creator.phone.value == user.phone.value){
+                user.flagAccepted = true;
+            }else{
+                user.flagAccepted = false;
+            }
+            return callback(null, user)
+        }else {
+            console.log("else");
+            userService.getValidNumberPhone(user.phone.value).then(function(validNumber){
+            user.phone.value = "+"+validNumber;
+            user.flagAccepted = false;  
+            user.registrationFlag = false;
+            return callback(null, user)
+    })
+        }
+    })
+},function(err, results){
        console.log(results);
        newGroup.members = results;
-       userService.getValidNumberPhone(newGroup.creator).then(function(numberValid){
-            newGroup.creator = "+"+numberValid;
+       
+       userService.getValidNumberPhone(newGroup.creator.phone.value).then(function(numberValid){ 
+            newGroup.creator.phone.value = "+"+numberValid;
             newGroup.save(function(err){
            if (err) deferred.reject(err);
            else {
@@ -48,27 +75,6 @@ function createGroup(group){
     return deferred.promise;
 }
 
-function filterUsers(user, callback){
-    userService.getUser(user.phone.value, function(response){
-        if (response){
-            console.log("if");
-            user._id = response._id;
-            user.name = response.name;
-            user.phone.value = response.phone.value;
-            user.registrationFlag = response.registrationFlag;
-            user.flagGroup = false;
-            return callback(null, user)
-        }else {
-            console.log("else");
-            userService.getValidNumberPhone(user.phone.value).then(function(validNumber){
-            user.phone.value = "+"+validNumber;
-            user.flagGroup = false;
-            user.registrationFlag = false;
-            return callback(null, user)
-    })
-        }
-    })
-}
 
 
 function getGroupsByUser(user, callback){
@@ -89,9 +95,38 @@ function getGroupsByUser(user, callback){
 }
 
 function acceptGroup (userPhone, id_group){
-
+    
 }
 
 function denyGroup (userPhone, id_group){
 
 }
+
+function deleteGroup(id, phone, callback){
+      Group.findById(id, function(err, group){
+          if (err){
+              logger.error(constant.error.msg_mongo_error+": "+err);
+              callback({status: 500, error: err });
+          }else if(group == null || group == undefined) {
+              callback({status:404, error: constant.error.msg_no_register});
+          }else{
+              for(var i = 0; i < group.members.length; i++){
+                if(group.members[i].phone.value == phone){
+                    group.members[i].flagFinalized = true;
+                }else{
+                    group.members[i].flagFinalized = false;
+                }                  
+              }
+              group.save(function(err, success){
+                  if(err){
+                      logger.error(constant.error.msg_mongo_error+": "+err);
+                      callback({status: 500, error: err });
+                  }else{
+                      callback(success);
+                  }
+              })
+          }
+      })
+}
+
+

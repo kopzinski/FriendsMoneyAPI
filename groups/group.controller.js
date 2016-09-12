@@ -5,7 +5,6 @@ var express = require('express'),
 module.exports = {
     
     createGroup:function (req, res, next) {
-
         var newGroup = ({
             creator:req.body.creator,
             members:req.body.members,
@@ -38,7 +37,21 @@ module.exports = {
                 }
             })
         }
+    },
+
+    deleteGroup:function (req, res, next) {
+        var id = req.params.idgroup;
+        var phone = req.params.phone;
+        groupService.deleteGroup(id, phone , function(response){  
+            if (response){     
+                res.json(response);
+            }else {    
+                res.json({});
+            }
+        })
     }
+    
+
 
 }
         
