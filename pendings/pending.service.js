@@ -88,8 +88,8 @@ function getListTransactionPaymentConfirmStatus (phone, callback){
 }
 
 function getListGroupAcceptedPendencies (phone, callback){
-
-            Group.find({members: {$elemMatch:{"phone.value":phone, flagGroup:false}}},function(err, groups){
+            
+            Group.find({members: {$elemMatch:{"phone.value":phone, flagAccepted:false}}},function(err, groups){
                     if (err) 
                     {
                         console.log(err);

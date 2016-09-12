@@ -26,11 +26,37 @@ function createGroup(group){
    var deferred = Q.defer();
    var newGroup = new Group(group);
    if(newGroup){
-       async.map(newGroup.members, filterUsers, function(err, results){
+     async.map(newGroup.members, function(user, callback){
+        userService.getUser(user.phone.value, function(response){
+        if (response){
+            console.log(newGroup.creator);
+            console.log("if");
+            user._id = response._id;
+            user.name = response.name;
+            user.phone.value = response.phone.value;
+            user.registrationFlag = response.registrationFlag;
+            if (newGroup.creator.phone.value == user.phone.value){
+                user.flagAccepted = true;
+            }else{
+                user.flagAccepted = false;
+            }
+            return callback(null, user)
+        }else {
+            console.log("else");
+            userService.getValidNumberPhone(user.phone.value).then(function(validNumber){
+            user.phone.value = "+"+validNumber;
+            user.flagAccepted = false;  
+            user.registrationFlag = false;
+            return callback(null, user)
+    })
+        }
+    })
+},function(err, results){
        console.log(results);
        newGroup.members = results;
-       userService.getValidNumberPhone(newGroup.creator).then(function(numberValid){
-            newGroup.creator = "+"+numberValid;
+       
+       userService.getValidNumberPhone(newGroup.creator.phone.value).then(function(numberValid){ 
+            newGroup.creator.phone.value = "+"+numberValid;
             newGroup.save(function(err){
            if (err) deferred.reject(err);
            else {
@@ -49,27 +75,6 @@ function createGroup(group){
     return deferred.promise;
 }
 
-function filterUsers(user, callback){
-    userService.getUser(user.phone.value, function(response){
-        if (response){
-            console.log("if");
-            user._id = response._id;
-            user.name = response.name;
-            user.phone.value = response.phone.value;
-            user.registrationFlag = response.registrationFlag;
-            user.flagCreate = false;
-            return callback(null, user)
-        }else {
-            console.log("else");
-            userService.getValidNumberPhone(user.phone.value).then(function(validNumber){
-            user.phone.value = "+"+validNumber;
-            user.flagCreate = false;
-            user.registrationFlag = false;
-            return callback(null, user)
-    })
-        }
-    })
-}
 
 
 function getGroupsByUser(user, callback){
