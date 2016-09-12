@@ -31,6 +31,7 @@ module.exports = {
         }else {
             groupService.getGroupsByUser(phone, function(response){  
                 if (response){     
+                    console.log(response);
                     res.json(response);
                 }else {    
                     res.json({});

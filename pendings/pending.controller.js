@@ -9,6 +9,7 @@
 module.exports = {
  getListPendencies:function(req, res, next){
         var phone = req.params.phone;
+        console.log(phone);
         if ( typeof phone == 'undefined'){
             res.json(400, { error: constant.error.msg_invalid_param});
         }else {
@@ -38,7 +39,6 @@ module.exports = {
                                         }else {
                                             callback(null, null);
                                         }
-                                        
                                     }
                                 })
                         },
@@ -57,7 +57,25 @@ module.exports = {
                                         }else {
                                             callback(null, null);
                                         }
-                                        
+                                    }
+                                })
+                            },
+
+                            function(pendenciesGroupsCreated, callback){
+   
+                                pendingService.getListGroupDeletedPendencies(user.phone.value, function(err, pendenciesGroupsDeleted){
+                                    if (err){
+                                        callback(err, null)
+                                    }else {
+                                        if (pendenciesGroupsDeleted && pendenciesGroupsCreated){
+                                            callback(null, pendenciesGroupsDeleted.concat(pendenciesGroupsCreated));
+                                        }else if(pendenciesGroupsDeleted){
+                                            callback(null, pendenciesGroupsDeleted);
+                                        }else if(pendenciesGroupsCreated){
+                                            callback(null, pendenciesGroupsCreated);
+                                        }else {
+                                            callback(null, null);
+                                        }
                                     }
                                 })
                             }

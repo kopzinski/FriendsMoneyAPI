@@ -19,6 +19,7 @@ var service = {};
  service.getListTransactionPaymentConfirmStatus = getListTransactionPaymentConfirmStatus;
  service.addAtributteStatusPendencie = addAtributteStatusPendencie;
  service.getListGroupAcceptedPendencies = getListGroupAcceptedPendencies;
+ service.getListGroupDeletedPendencies = getListGroupDeletedPendencies;
 module.exports = service;
 
 function getListTransactionPendingStatus (phone, callback){
@@ -106,5 +107,27 @@ function getListGroupAcceptedPendencies (phone, callback){
                        })  
                     }
                 }).sort({createdAt : 1});
+
+}
+
+function getListGroupDeletedPendencies (phone, callback){
+            console.log(phone);
+            Group.find({members: {$elemMatch:{"phone.value":phone, flagFinalized:false}}},function(err, groups){
+                if (err) 
+                {
+                    console.log(err);
+                    logger.error(constant.error.msg_mongo_error+": "+err);
+                    callback(err, null);
+                }else if (groups[0] == null || groups[0] == undefined)
+                {
+                
+                    callback(null, null);
+                }
+                else {
+                    addAtributteStatusPendencie("finalizeGroup",groups,function(groups){
+                        callback(null, groups);  
+                    })  
+                }
+            }).sort({createdAt : 1});
 
 }
