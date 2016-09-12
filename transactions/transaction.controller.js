@@ -112,7 +112,7 @@ module.exports = {
     },
 
     updateTransaction:function (req, res, next) {
-
+         console.log(req.body);
          var transaction = new Transaction(req.body);
 
         if ( typeof transaction.valueTotal  == 'undefined' ||  typeof transaction.status  == 'undefined' || typeof transaction.debtor == 'undefined'|| typeof transaction.creditor == "undefined") {
@@ -143,6 +143,7 @@ module.exports = {
                         transactionService.createTransaction(newTransaction, function(response){
                             console.log(response);
                             if (response){
+                                console.log(response);
                                 res.json(response)
                             }else {
                                 res.sendStatus(400);

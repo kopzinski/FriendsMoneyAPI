@@ -9,7 +9,7 @@
       },
  
       "msg_empty_param"     : {
- 
+
         "result"    :"error",
         "message"   :"Parameters should not be empty."
  
@@ -65,7 +65,7 @@
    "success" : {
  
       "msg_reg_success" : {
- 
+        
         "result"    : "success",
         "message"   : "Transaction successfully registered."
  

@@ -33,7 +33,7 @@ function getListTransactionPendingStatus (phone, callback){
                         callback(err, null);
                     }else if (transactions[0] == null || transactions[0] == undefined)
                     {
-                       logger.error(constant.error.msg_no_register);
+                       
                        callback(null, null);
                     }
                     else {
@@ -76,7 +76,7 @@ function getListTransactionPaymentConfirmStatus (phone, callback){
                         callback(err, null);
                     }else if (transactions[0] == null || transactions[0] == undefined)
                     {
-                        logger.error(constant.error.msg_no_register);
+                        
                        callback(null, null);
                     }
                     else {
@@ -97,7 +97,7 @@ function getListGroupAcceptedPendencies (phone, callback){
                         callback(err, null);
                     }else if (groups[0] == null || groups[0] == undefined)
                     {
-                        logger.error(constant.error.msg_no_register);
+                   
                        callback(null, null);
                     }
                     else {
