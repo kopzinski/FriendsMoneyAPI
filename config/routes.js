@@ -35,6 +35,7 @@ router.post('/group', groupController.createGroup);
 router.get('/groups/:phone', groupController.getGroupsByUser);
 router.delete('/group/:idgroup/:phone', groupController.deleteGroup);
 router.put('/group/accept', groupController.acceptGroupInvitation);
+router.put('/group/deny', groupController.denyGroupInvitation);
 //Pendencies
 router.get('/pending/:phone', pendencieController.getListPendencies);
 module.exports = router;  
