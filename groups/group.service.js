@@ -94,6 +94,13 @@ function getGroupsByUser(user, callback){
         }     
 }
 
+function acceptGroup (userPhone, id_group){
+    
+}
+
+function denyGroup (userPhone, id_group){
+
+}
 
 function deleteGroup(id, phone, callback){
       Group.findById(id, function(err, group){
@@ -121,4 +128,5 @@ function deleteGroup(id, phone, callback){
           }
       })
 }
+
 
