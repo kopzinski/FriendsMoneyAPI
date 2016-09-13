@@ -17,6 +17,7 @@ var service = {};
 service.createGroup = createGroup;
 service.getGroupsByUser = getGroupsByUser;
 service.deleteGroup = deleteGroup;
+service.acceptGroupInvitation = acceptGroupInvitation;
 //service.getGruposByUser = getGruposByUser;
 
 module.exports = service;
@@ -94,11 +95,48 @@ function getGroupsByUser(user, callback){
         }     
 }
 
-function acceptGroup (userPhone, id_group){
-    
+function acceptGroupInvitation (userPhone, id_group, callback){
+    userService.getUser(userPhone, function(user){
+        console.log(userPhone);
+       if(user) {
+           console.log("outro aqui");
+            Group.findById(id_group, function(err, group){
+
+
+                if (err){
+                    callback(err, null);
+                }else {
+                    async.map(group.members,function(user, doneCallback){
+                        console.log(user);
+                        if(user.phone.value == userPhone){
+                            user.flagAccepted = true;
+                            console.log(user);
+                        }
+                         doneCallback(user)
+                    },
+                    function(result){
+                        group.members = result;
+                         group.save(function(err){
+                            if (err) callback(err, null);
+                            else {
+                                callback(null, constant.success.msg_reg_success);
+                            }
+                        })
+                    }) 
+                }
+            })
+        }else {
+            callback(null, null)
+        }
+    })
+
 }
 
-function denyGroup (userPhone, id_group){
+function denyGroupInvitation (userPhone, id_group){
+
+}
+
+function acceptGroupFinalized (userPhone, id_group){
 
 }
 
