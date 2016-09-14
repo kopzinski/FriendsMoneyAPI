@@ -18,6 +18,7 @@ service.createGroup = createGroup;
 service.getGroupsByUser = getGroupsByUser;
 service.deleteGroup = deleteGroup;
 service.acceptGroupInvitation = acceptGroupInvitation;
+service.denyGroupInvitation = denyGroupInvitation;
 //service.getGruposByUser = getGruposByUser;
 
 module.exports = service;
@@ -95,45 +96,67 @@ function getGroupsByUser(user, callback){
         }     
 }
 
-function acceptGroupInvitation (userPhone, id_group, callback){
+function acceptGroupInvitation (userPhone, id_group){
+    var deferred = Q.defer();
     userService.getUser(userPhone, function(user){
-        console.log(userPhone);
+
        if(user) {
-           console.log("outro aqui");
             Group.findById(id_group, function(err, group){
-
-
+                
                 if (err){
-                    callback(err, null);
+                   deferred.reject(err);
                 }else {
-                    async.map(group.members,function(user, doneCallback){
-                        console.log(user);
-                        if(user.phone.value == userPhone){
+                    var newGroup = new Group(group);
+                     async.map(newGroup.members, function(user, callback){
+                        if (userPhone == user.phone.value){
                             user.flagAccepted = true;
-                            console.log(user);
                         }
-                         doneCallback(user)
+                        return callback(null, user)
+                         
                     },
-                    function(result){
+                    function(err, result){
                         group.members = result;
-                         group.save(function(err){
-                            if (err) callback(err, null);
+                        console.log(group);
+                        group.save(function(err){
+                            if (err) deferred.reject(err);
                             else {
-                                callback(null, constant.success.msg_reg_success);
+                                deferred.resolve(constant.success.msg_reg_success);
                             }
                         })
                     }) 
                 }
             })
         }else {
-            callback(null, null)
+            deferred.reject();
         }
     })
-
+return deferred.promise;
 }
 
 function denyGroupInvitation (userPhone, id_group){
-
+     var deferred = Q.defer();
+    userService.getUser(userPhone, function(user){
+         if(user) {
+             Group.findById(id_group, function(err, group){
+                 if (err){
+                   deferred.reject(err);
+                 }else {
+                     group.members =  (group.members).filter(function(member){
+                        return member.phone.value !== userPhone && member.flagAccepted == false;
+                     });
+                     group.save(function(err){
+                            if (err) deferred.reject(err);
+                            else {
+                                deferred.resolve(constant.success.msg_reg_success);
+                            }
+                     })
+                 }
+             })
+         }else {
+             deferred.reject();
+         }
+    });
+    return deferred.promise;
 }
 
 function acceptGroupFinalized (userPhone, id_group){

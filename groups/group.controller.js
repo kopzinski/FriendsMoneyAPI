@@ -52,25 +52,33 @@ module.exports = {
         })
     },
     acceptGroupInvitation:function(req, res, next){
-
+        console.log(req.body);
         var userPhone = req.body.userPhone;
         var id_group = req.body.id_group;
 
-        groupService.acceptGroupInvitation(userPhone, id_group, function(err, response){
+        groupService.acceptGroupInvitation(userPhone,id_group).then(function(response){
+            res.json(response);
 
-            if (response){
-                res.json(constant.success.msg_reg_success);
-            }else {
-                res.status(404).json(err);
-            }
+        }).fail(function(err){
+            res.status(404).json(err);
+        })
+    },
+    denyGroupInvitation:function(req, res, next){
+        console.log(req.body);
+        var userPhone = req.body.userPhone;
+        var id_group = req.body.id_group;
+
+        groupService.denyGroupInvitation(userPhone,id_group).then(function(response){
+            res.json(response);
+
+        }).fail(function(err){
+            res.status(404).json(err);
         })
     }
 
     
     
     
-
-
 }
         
         
