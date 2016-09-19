@@ -21,6 +21,13 @@
         "message"   :"Registration failure."
  
       },
+       
+      "msg_find_failure_transaction"     : {
+ 
+        "result" : "error",
+        "message" : "Unable to find a transaction"
+ 
+      },
  
       "msg_reg_exists"  : {
  
@@ -68,6 +75,12 @@
  
         "result"    : "success",
         "message"   : "Group successfully Created."
+ 
+      },
+      "msg_reg_transaction_success" : {
+ 
+        "result"    : "success",
+        "message"   : "Group Transaction successfully Created."
  
       },
  

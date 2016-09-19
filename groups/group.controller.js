@@ -38,6 +38,19 @@ module.exports = {
                 }
             })
         }
+    },
+    getTransactionsByGroup:function(req, res, next){
+        var idGroup = req.body.idGroup;
+        
+    },
+    getMembersByGroup:function(req, res, next){
+        res.json("getMembersByGroup");
+    },
+    registerTransactionByGroup: function(req, res, next){
+        res.json("registerTransactionByGroup");
+    },
+    updateTransactionByGroup: function(req, res, next){
+        res.json("updateTransactionByGroup");
     }
 
 }

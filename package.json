@@ -23,6 +23,7 @@
   "author": "POC/DbServer",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.0.1",
     "body-parser": "^1.15.2",
     "collections": "^5.0.4",
     "cors": "^2.7.1",
