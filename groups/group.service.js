@@ -141,20 +141,23 @@ function filterUsers(user, callback){
 
 
 function getGroupsByUser(user, callback){
-        if(user){
-            Group.find({"user.phone": user.phone},function(err, groups){
-                if (err){
-                    logger.error(constant.error.msg_mongo_error+": "+err);
-                    callback({status:500, error: err });
-                }else if (groups[0] == null || groups[0] == undefined){
-                    callback();
-                } else {
-                    callback(groups);
-                }
-            }).sort({updatedAt : 1})
-        }else {
-            callback({status:404, error: "No groups"});
-        }     
+    var deferred = Q.defer();
+    if(user){
+        Group.find({"user.phone": user.phone},function(err, groups){
+            if (err){
+                logger.error(constant.error.msg_mongo_error+": "+err);
+                deferred.reject(err);
+            }else if (groups[0] == null || groups[0] == undefined){
+                deferred.resolve();
+            } else {
+                deferred.resolve(groups);
+            }
+        }).sort({updatedAt : 1})
+    }else {
+        deferred.reject(constant.error.msg_find_failure);
+    }
+    return deferred.promise;
+     
 }
 
 function getGroupById(idGroup){

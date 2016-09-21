@@ -1,8 +1,8 @@
-var User 		= require('./user.schema');
-	userService = require('./user.service');
-	constants 	= require('./user.constants.json');
-	service 	= {};
-	Q 			= require('q');
+var User = require('./user.schema'),
+	userService = require('./user.service'),
+	constants = require('./user.constants.json'),
+	service = {},
+	Q = require('q');
 
 
 service.getUser = getUser;

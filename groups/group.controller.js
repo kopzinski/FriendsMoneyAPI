@@ -1,17 +1,15 @@
-var express = require('express'),
+var express      = require('express'),
     groupService = require('./group.service'),
-    constant = require('./group.constants.json');
+    constant     = require('./group.constants.json');
 
 module.exports = {
     
     createGroup:function (req, res, next) {
-
         var newGroup = ({
             creator:req.body.creator,
             members:req.body.members,
-            title:req.body.title,
+            title:req.body.title
         })
-
         if (typeof newGroup.creator == 'undefined' || newGroup.members.length == 0 || typeof newGroup.title == 'undefined'){
             res.status(400).json({error: constant.error.msg_invalid_param});
         }else {
@@ -22,15 +20,13 @@ module.exports = {
             })
         }
     },
-
     getGroupsByUser:function (req, res, next) {
-        
         var phone = req.params.phone;
         
         if ( typeof phone == 'undefined'){
-            res.json(400, { error: constant.error.msg_invalid_param});
+            res.status(400).json(constant.error.msg_invalid_param);
         }else {
-            groupService.getGroupsByUser(phone, function(response){  
+            groupService.getGroupsByUser(phone).then(function(response){  
                 if (response){     
                     res.json(response);
                 }else {    
@@ -41,16 +37,53 @@ module.exports = {
     },
     getTransactionsByGroup:function(req, res, next){
         var idGroup = req.body.idGroup;
-        
+        if (typeof idGroup == 'undefined'){
+            res.status(400).json(constant.error.msg_invalid_param);
+        }else {
+            groupService.getTransactionsByGroup(idGroup).then(function(transactions){
+                res.json(transactions);
+            }).fail(function(err){
+                res.status(404).json(err);
+            })  
+        }
     },
     getMembersByGroup:function(req, res, next){
-        res.json("getMembersByGroup");
+        var idGroup = req.body.idGroup;
+        if (typeof idGroup == 'undefined'){
+            res.status(400).json(constant.error.msg_invalid_param);
+        }else {
+            groupService.getMembersByGroup(idGroup).then(function(members){
+                res.json(members);
+            }).fail(function(err){
+                res.status(404).json(err);
+            })  
+        }    
     },
-    registerTransactionByGroup: function(req, res, next){
-        res.json("registerTransactionByGroup");
-    },
+    registerTransactionByGroup:function (req, res, next){
+       var idGroup = req.body.idGroup;
+       var transaction = req.body.transaction;
+       if (typeof idGroup == 'undefined' && typeof transaction == 'undefined'){
+           res.status(400).json(constant.error.msg_invalid_param);
+       }else {
+           groupService.registerTransactionByGroup(idGroup, transaction).then(function(response){
+               res.json(response);
+           }).fail(function(err){
+               res.status(404).json(err);
+           }) 
+       }
+    },   
     updateTransactionByGroup: function(req, res, next){
-        res.json("updateTransactionByGroup");
+       var idGroup = req.body.idGroup;
+       var transaction = req.body.transaction;
+       if (typeof idGroup == 'undefined' && typeof transaction.valuePaid == 'undefined' && typeof transaction.description == 'undefined'){
+           res.status(400).json(constant.error.msg_invalid_param);
+       }else {
+           groupService.updateTransactionByGroup(idGroup, transaction).then(function(response){
+               res.json(response);
+           }).fail(function(err){
+               res.status(404).json(err);
+           }) 
+       }
     }
 
 }
