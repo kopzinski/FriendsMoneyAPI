@@ -141,15 +141,25 @@ function denyGroupInvitation (userPhone, id_group){
                  if (err){
                    deferred.reject(err);
                  }else {
-                     group.members =  (group.members).filter(function(member){
-                        return member.phone.value !== userPhone && member.flagAccepted == false;
-                     });
-                     group.save(function(err){
+
+                    async.waterfall([
+                    function(callback){
+                       var members =  (group.members).filter(function(member){
+                        return member.phone.value !== userPhone && member.flagAccepted != false;
+                       })
+                       callback(members)
+                    }],
+                    function(result){
+                        console.log(result);
+                        group.members = result;
+                         group.save(function(err){
                             if (err) deferred.reject(err);
                             else {
                                 deferred.resolve(constant.success.msg_reg_success);
                             }
-                     })
+                        })
+
+                    })
                  }
              })
          }else {
@@ -191,3 +201,16 @@ function deleteGroup(id, phone, callback){
 }
 
 
+var removeByAttr = function(arr, attr, value, callback){
+    var i = arr.length;
+    while(i--){
+       if( arr[i] 
+           && arr[i].hasOwnProperty(attr) 
+           && (arguments.length > 2 && arr[i][attr] === value ) ){ 
+
+           arr.splice(i,1);
+
+       }
+    }
+    return arr;
+}
