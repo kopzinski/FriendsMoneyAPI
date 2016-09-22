@@ -74,13 +74,15 @@ module.exports = {
         })
     },
     getTransactionsByGroup:function(req, res, next){
-        var idGroup = req.body.idGroup;
+        var idGroup = req.params.idGroup;
+        console.log(req.params)
         if (typeof idGroup == 'undefined'){
             res.status(400).json(constant.error.msg_invalid_param);
         }else {
             groupService.getTransactionsByGroup(idGroup).then(function(transactions){
                 res.json(transactions);
             }).fail(function(err){
+                console.log(err);
                 res.status(404).json(err);
             })  
         }
