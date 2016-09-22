@@ -14,6 +14,13 @@ var groupSchema = mongoose.Schema({
 		flagFinalized: Boolean
 	}],
 	creator:{phone:{value:{type: String, required:true, ref: 'User.phone.value'}}, name:String},
+	transactions:[{
+		description: String,
+		valuePaid: Number,
+		createdAt: Date,
+		updatedAt: Date,
+		creditor:{phone:{value:{type: String, required:true, ref: 'User' }}, name:{type:String}}
+		}],
 	updatedAt:Date,
 	createdAt:Date,
 	finalizedAt:Date
