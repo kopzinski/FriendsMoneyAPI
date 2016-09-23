@@ -13,6 +13,7 @@ module.exports = controller;
 
 
 function getContact (req,res){
+    console.log(req.body);
     console.log("fui chamado");
     var newContacts = [];
     var contacts = req.body.contacts;  
