@@ -79,7 +79,8 @@ module.exports = {
           }
     },
     registerUserFromTransaction: function(req,res,next){
-
+        console.log(req.body.transaction.creator);
+        console.log("reste");
         if(req.body.transaction){
             var transaction = req.body.transaction;
                 if(((!transaction.debtor.registrationFlag)||(!transaction.creditor.registrationFlag))&& (transaction.creditor.phone)||(transaction.debtor.phone)){

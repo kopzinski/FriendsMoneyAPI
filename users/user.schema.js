@@ -25,7 +25,6 @@ this.updatedAt = currentDate;
 // if createdAt doesn't exist
 if(!this.createdAt)
     this.createdAt = currentDate;
-
 next();
 
 });
