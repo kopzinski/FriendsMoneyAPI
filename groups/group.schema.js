@@ -11,7 +11,9 @@ var groupSchema = mongoose.Schema({
 		phone:{value:{type: String, required:true, ref: 'User' }},
 		registrationFlag:Boolean,
 		flagAccepted: Boolean,
-		flagFinalized: Boolean
+		flagFinalized: Boolean,
+		//total balance user x group (to receive or paid in that group)
+		totalBalance: Number
 	}],
 	creator:{phone:{value:{type: String, required:true, ref: 'User.phone.value'}}, name:String},
 	transactions:[{
