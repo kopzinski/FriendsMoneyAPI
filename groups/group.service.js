@@ -25,7 +25,7 @@ service.getMembersByGroup = getMembersByGroup;
 service.registerTransactionByGroup = registerTransactionByGroup;
 service.updateTransactionByGroup = updateTransactionByGroup;
 service.getGroupById = getGroupById;
-
+service.calculateIndividualPaymentByUser = calculateIndividualPaymentByUser;
 
 module.exports = service;
 
@@ -46,6 +46,22 @@ function registerTransactionByGroup(idGroup, transaction){
         deferred.reject(err);
     })
     return deferred.promise;    
+}
+
+function calculateIndividualPaymentByUser(idGroup, phoneUser){
+    getGroupById(idGroup).then(function(group){
+        
+        var members = group.members;
+        var transactions = group.transactions;
+        var totalSumTransactions = 0;
+        transactions.forEach(function(transaction){
+              totalSumTransactions += transaction.valuePaid;
+        })
+        var valueByPerson = totalSumTransactions / members.length;
+        console.log(valueByPerson);
+        
+        
+    }) 
 }
 
 function updateTransactionByGroup(idGroup, transactionUpdated){
