@@ -40,6 +40,7 @@ function registerTransactionByGroup(idGroup, transaction){
             if (err){
                 deferred.reject(err);
             }else {
+                updatePaymentBalanceGroupByUser(idGroup);
                 deferred.resolve(constant.success.msg_reg_transaction_success);
             }
         })
@@ -86,7 +87,11 @@ function updatePaymentBalanceGroupByUser(idGroup) {
 
 function getMemebersBalanceByUser(idGroup, phoneUser){
     var deferred = Q.defer();
-    updatePaymentBalanceGroupByUser(idGroup).then(function(groupUpdate){
+    getGroupById(idGroup).then(function(groupUpdate){
+    if(groupUpdate.transactions.length == 0){
+        deferred.resolve(groupUpdate.members);
+    }else{         
+    //updatePaymentBalanceGroupByUser(idGroup).then(function(groupUpdate){
         var members = groupUpdate.members.toObject();
         var totalBalancesCreditor = 0;
         var newMembers = members;
@@ -96,7 +101,7 @@ function getMemebersBalanceByUser(idGroup, phoneUser){
             totalBalancesCreditor += member.totalBalance;
         })
         console.log(totalBalancesCreditor);
-         while(totalBalancesCreditor > 0){    
+         while(totalBalancesCreditor > 0){                 
              //encontra maior credor
              var biggerCreditor = 0;
 
@@ -155,7 +160,9 @@ function getMemebersBalanceByUser(idGroup, phoneUser){
             
          }
          deferred.resolve(newMembers);     
+    }
     });
+    
     return deferred.promise;  
 }
 
