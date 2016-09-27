@@ -378,17 +378,33 @@ function deleteGroup(id, phone, callback){
                 if(group.members[i].phone.value == phone){
                     group.members[i].flagFinalized = true;
                 }else{
-                    group.members[i].flagFinalized = false;
-                }                  
+                    if(group.members[i].flagFinalized == true){
+                        group.members[i].flagFinalized == true;
+                    }else{
+                        group.members[i].flagFinalized = false;
+                    }
+                }             
+              }
+              var cont = 0;
+              for(var i = 0; i < group.members.length; i++){
+                if(group.members[i].flagFinalized == true){
+                    cont++;
+                }  
+              }
+              if(cont == group.members.length){
+                var date = new Date();
+                group.finalizedAt = date;   
               }
               group.save(function(err, success){
-                  if(err){
-                      logger.error(constant.error.msg_mongo_error+": "+err);
-                      callback({status: 500, error: err });
-                  }else{
-                      callback(success);
-                  }
+                if(err){
+                    logger.error(constant.error.msg_mongo_error+": "+err);
+                    callback({status: 500, error: err });
+                }else{
+                    callback(success);
+                }
               })
+              
+              
           }
       })
 }
