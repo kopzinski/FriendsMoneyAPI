@@ -88,12 +88,13 @@ module.exports = {
         }
     },
     getMembersByGroup:function(req, res, next){
-        var idGroup = req.body.idGroup;
+        var idGroup = req.params.idGroup;
+        var phone = req.params.phone;
         if (typeof idGroup == 'undefined'){
             res.status(400).json(constant.error.msg_invalid_param);
         }else {
-            groupService.getMembersByGroup(idGroup).then(function(members){
-                res.json(members);
+            groupService.getMemebersBalanceByUser(idGroup, phone).then(function(members){
+                res.json(members);                
             }).fail(function(err){
                 res.status(404).json(err);
             })  
