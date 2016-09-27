@@ -5,7 +5,6 @@ var pkg     = require('./package.json');
 var config  = require('./config/config');
 var express = require('./config/express');
 var mongodb = require('./config/mongoose');
-var groupService = require('./groups/group.service');
 
 
 

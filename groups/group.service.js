@@ -14,9 +14,9 @@ var Group       = require('./group.schema'),
 
 //export all methods to be accessed externally
 var service = {};
+
 service.createGroup = createGroup;
 service.getGroupsByUser = getGroupsByUser;
-
 service.deleteGroup = deleteGroup;
 service.acceptGroupInvitation = acceptGroupInvitation;
 service.denyGroupInvitation = denyGroupInvitation;
