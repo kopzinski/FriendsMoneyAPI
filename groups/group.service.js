@@ -328,6 +328,7 @@ return deferred.promise;
 
 function denyGroupInvitation (userPhone, id_group){
      var deferred = Q.defer();
+     console.log("asd",userPhone);
     userService.getUser(userPhone, function(user){
          if(user) {
              Group.findById(id_group, function(err, group){
@@ -338,8 +339,9 @@ function denyGroupInvitation (userPhone, id_group){
                     async.waterfall([
                     function(callback){
                        var members =  (group.members).filter(function(member){
-                        return member.phone.value !== userPhone && member.flagAccepted != false;
+                        return member.phone.value != userPhone;
                        })
+                       console.log(members);
                        callback(members)
                     }],
                     function(result){
