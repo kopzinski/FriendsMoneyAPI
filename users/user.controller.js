@@ -28,7 +28,6 @@ module.exports = {
     getUser:function (req, res, next) {
 
         var user_phone = req.params.phone;
-        console.log(user_phone);
         if (typeof user_phone == 'undefined' || !user_phone.trim()){
              res.status(400).json({ error: constants.error.msg_invalid_param});
         }
@@ -57,8 +56,6 @@ module.exports = {
         }
     }, 
     registerUser:function(req, res, next){
-        console.log("Aqui");
-        console.log(req.body);
           if (req.body.user){
               
             var user = req.body.user;
@@ -79,8 +76,6 @@ module.exports = {
           }
     },
     registerUserFromTransaction: function(req,res,next){
-        console.log(req.body.transaction.creator);
-        console.log("reste");
         if(req.body.transaction){
             var transaction = req.body.transaction;
                 if(((!transaction.debtor.registrationFlag)||(!transaction.creditor.registrationFlag))&& (transaction.creditor.phone)||(transaction.debtor.phone)){

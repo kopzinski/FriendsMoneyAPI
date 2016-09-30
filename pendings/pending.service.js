@@ -30,7 +30,6 @@ function getListTransactionPendingStatus (phone){
         {"creditor.phone.value": phone}]}]},function(err, transactions){
         if (err) 
             {
-                console.log(err);
                 logger.error(constant.error.msg_mongo_error+": "+err);
                 deferred.reject(err);
             }else if (transactions[0] == null || transactions[0] == undefined)
@@ -76,7 +75,6 @@ function getListTransactionPaymentConfirmStatus (phone){
     {"creditor.senderConfirm":false}]}]}]},function(err, transactions){
             if (err) 
             {
-                console.log(err);
                 logger.error(constant.error.msg_mongo_error+": "+err);
                 deferred.reject(err);
             }else if (transactions[0] == null || transactions[0] == undefined)
@@ -97,11 +95,9 @@ function getListTransactionPaymentConfirmStatus (phone){
 
 function getListGroupDeletedPendencies (phone){
     var deferred = Q.defer();
-    console.log(phone);
     Group.find({members: {$elemMatch:{"phone.value":phone, flagFinalized:false}}},function(err, groups){
         if (err) 
         {
-            console.log(err);
             logger.error(constant.error.msg_mongo_error+": "+err);
             deferred.reject(err);
         }else if (groups[0] == null || groups[0] == undefined)
@@ -123,7 +119,6 @@ function getListGroupAcceptedPendencies (phone){
         Group.find({members: {$elemMatch:{"phone.value":phone, flagAccepted:false}}},function(err, groups){
             if (err) 
             {
-                console.log(err);
                 logger.error(constant.error.msg_mongo_error+": "+err);
                 deferred.reject(err);
             }else if (groups[0] == null || groups[0] == undefined)

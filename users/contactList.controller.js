@@ -16,10 +16,8 @@ function getContact (req,res){
 
 
 
-    console.log("fui chamado");
     var newContacts = [];
     var contacts = req.body.contacts;  
-    //console.log(req.body);
     async.map(contacts, FilterContacts, function(err, results){
        res.json(results);
     });

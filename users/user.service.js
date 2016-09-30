@@ -62,7 +62,6 @@ function deleteUser (phone, callback){
 }
 
 function registerUserFlagFalse (transaction, callback){
-	console.log(transaction)
 	if (transaction.debtor == transaction.creator){
 		var user = {
 			phone:transaction.creditor.phone,
@@ -104,10 +103,8 @@ function registerUserFlagTrue (user, callback){
 	 if(user.phone){
 		User.findOne({$or:[{"phone.value" : {$regex : ".*"+user.phone.value+".*"}},{"phone.value":user.phone.value}, {deviceId:user.deviceId}]}, function(err, userMongo){
 			if(err){
-				console.log("erro");
 				callback({error: err});
 			}else if(!userMongo){
-				console.log("salvando a primeira vez")
 				var newUser = new User(user);
 				newUser.save(function(err){
 					if (err)
@@ -116,7 +113,6 @@ function registerUserFlagTrue (user, callback){
 					callback(newUser);
 				})
 			}else if (userMongo.name == user.name && userMongo.phone.value == user.phone.value  && userMongo.registrationId == user.registrationId && userMongo.deviceId == user.deviceId){
-				console.log("Objetos iguais no banco")
 				callback(userMongo);
 			}else {
 				if (user.name)

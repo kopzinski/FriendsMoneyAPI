@@ -9,7 +9,6 @@
 module.exports = {
  getListPendencies:function(req, res, next){
         var phone = req.params.phone;
-        console.log(phone);
         if ( typeof phone == 'undefined'){
             res.status(400).json(constant.error.msg_invalid_param);
         }else {

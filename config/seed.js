@@ -67,7 +67,6 @@ function populateUser(user1, user2,user3, callback){
 populateUser(user1, user2,user3, function(response){
      Transaction.find({}).remove(function() {
     if (response){
-        console.log("entrou aqui");
         var transaction1 = new Transaction({
             value:506,
             creator:{phone:user3.phone,  name:user3.name, registrationFlag:user3.registrationFlag},

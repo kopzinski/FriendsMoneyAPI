@@ -60,7 +60,6 @@ function updatePaymentBalanceGroupByUser(idGroup) {
         })
         
         var valueByPerson = totalSumTransactions / members.length;
-        console.log("valueByPerson",valueByPerson);
         members.forEach(function(member){
             var valuePaid = 0;
             transactions.forEach(function(transaction){
@@ -100,7 +99,6 @@ function getMemebersBalanceByUser(idGroup, phoneUser){
             if(member.totalBalance > 0)
             totalBalancesCreditor += member.totalBalance;
         })
-        console.log(totalBalancesCreditor);
          while(totalBalancesCreditor > 0){                 
              //encontra maior credor
              var biggerCreditor = 0;
@@ -129,12 +127,10 @@ function getMemebersBalanceByUser(idGroup, phoneUser){
                 
                 //verifica se quem chamou a função é o credor
                 if (members[biggerCreditor].phone.value == phoneUser){
-                    console.log("Entrei no if sendo creditor1")
                     //Se sim o balanço individual do devedor em relação a quem chamou a função é igual ao totalBalance do devedor * -1
                     newMembers[biggerDebtor].individualBalance = balance;
                     //verifica se quem chamou é o debtor
                 }else if(members[biggerDebtor].phone.value == phoneUser){
-                     console.log("Entrei no if sendo debtor")
                     //se sim o individual balance do creditor é igual ao totalBalance de quem chamou (negativo mesmo)
                     newMembers[biggerCreditor].individualBalance = -balance;
 
@@ -147,12 +143,10 @@ function getMemebersBalanceByUser(idGroup, phoneUser){
                 members[biggerCreditor].totalBalance = 0;
                  //verifica se quem chamou a função é o credor
                 if (members[biggerCreditor].phone.value == phoneUser){
-                    console.log("Entrei no if sendo creditor2")
                     //Se sim o balanço individual do devedor em relação a quem chamou a função é igual ao totalBalance do devedor * -1
                     newMembers[biggerDebtor].individualBalance  = balance;
                 //verifica se quem chamou é o debtor
                 }else if(members[biggerDebtor].phone.value == phoneUser){
-                    console.log("Entrei no if sendo debtor")
                     //se sim o individual balance do creditor é igual ao totalBalance de quem chamou (negativo mesmo)
                     newMembers[biggerCreditor].individualBalance = -balance;
                 }
@@ -219,15 +213,12 @@ function getMembersByGroup(idGroup) {
 }
 
 function createGroup(group){
-    console.log("createGroup");
    var deferred = Q.defer();
    var newGroup = new Group(group);
    if(newGroup){
      async.map(newGroup.members, function(user, callback){
         userService.getUser(user.phone.value, function(response){
         if (response){
-            console.log(newGroup.creator);
-            console.log("if");
             user._id = response._id;
             user.name = response.name;
             user.phone.value = response.phone.value;
@@ -239,7 +230,6 @@ function createGroup(group){
             }
             return callback(null, user)
         }else {
-            console.log("else");
             userService.getValidNumberPhone(user.phone.value).then(function(validNumber){
             user.phone.value = "+"+validNumber;
             user.flagAccepted = false;  
@@ -249,7 +239,6 @@ function createGroup(group){
         }
     })
     },function(err, results){
-        console.log(results);
         newGroup.members = results;
         
         userService.getValidNumberPhone(newGroup.creator.phone.value).then(function(numberValid){ 
@@ -309,7 +298,6 @@ function acceptGroupInvitation (userPhone, id_group){
                     },
                     function(err, result){
                         group.members = result;
-                        console.log(group);
                         group.save(function(err){
                             if (err) deferred.reject(err);
                             else {
@@ -328,7 +316,6 @@ return deferred.promise;
 
 function denyGroupInvitation (userPhone, id_group){
      var deferred = Q.defer();
-     console.log("asd",userPhone);
     userService.getUser(userPhone, function(user){
          if(user) {
              Group.findById(id_group, function(err, group){
@@ -341,11 +328,9 @@ function denyGroupInvitation (userPhone, id_group){
                        var members =  (group.members).filter(function(member){
                         return member.phone.value != userPhone;
                        })
-                       console.log(members);
                        callback(members)
                     }],
                     function(result){
-                        console.log(result);
                         group.members = result;
                          group.save(function(err){
                             if (err) deferred.reject(err);

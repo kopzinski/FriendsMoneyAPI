@@ -6,7 +6,6 @@ var express = require('express'),
 module.exports = {
     
     createTransaction:function (req, res, next) {
-        console.log(req.body);
         var newTransaction = new Transaction({
             creator:req.body.creator,
             valueTotal: req.body.valueTotal,
@@ -112,13 +111,11 @@ module.exports = {
     },
 
     updateTransaction:function (req, res, next) {
-         console.log(req.body);
          var transaction = new Transaction(req.body);
 
         if ( typeof transaction.valueTotal  == 'undefined' ||  typeof transaction.status  == 'undefined' || typeof transaction.debtor == 'undefined'|| typeof transaction.creditor == "undefined") {
             res.status(400).json({ error: constant.error.msg_invalid_param});
         }else {
-            console.log(transaction);
             if (transaction.valuePaid == undefined || transaction.valueTotal == transaction.valuePaid || (transaction.status == "accepted") || (transaction.status == "paymentConfirm")){
                 transactionService.updateTransaction(transaction, function(response){
                     if (response){
@@ -128,7 +125,6 @@ module.exports = {
                     }
                 })
             }else {
-                console.log("Entrou no else");
                 transactionService.updateTransaction(transaction, function(response){
                     if (response){
                         var newTransaction = {
@@ -139,11 +135,8 @@ module.exports = {
                             creditor: transaction.creditor,
                             creator:transaction.creator
                         }
-                        console.log(newTransaction);
                         transactionService.createTransaction(newTransaction, function(response){
-                            console.log(response);
                             if (response){
-                                console.log(response);
                                 res.json(response)
                             }else {
                                 res.sendStatus(400);

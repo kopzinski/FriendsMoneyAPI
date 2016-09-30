@@ -29,42 +29,5 @@ next();
 
 });
 
-// userSchema.post('findOneAndUpdate', function() {
-
-// 	this.findOne({"phone.value":this._update.phone.value}, function(err, userMongo){
-// 			console.log(userMongo);
-// 			 if (userMongo.createdAt == null || userMongo.createdAt == undefined){
-// 				 console.log("aqui")
-// 			 	var currentDate = new Date();
-// 			 	userMongo.updatedAt = currentDate;
-// 			 	userMongo.createdAt = currentDate;
-// 				 console.log(userMongo);
-// 			 	userMongo.save(function(err){
-// 			 		if (err) console.log(err)
-// 				})
-// 			 }else {
-// 				 console.log("outro aqui");
-// 			// 	var currentDate = new Date();
-// 			// 	userMongo.updatedAt = currentDate;
-// 			// 	console.log(userMongo);
-// 			// 	userMongo.save(function(err){
-// 			// 		if (err) console.log(err)
-				
-// 			// 	})
-// 			 }
-// 		})
-		
-// 	// if (this._update == null){
-// 	// 	this.update({},{ $set: { updatedAt: new Date(), createdAt: new Date() } });
-// 	// }else {
-// 	// 	this.findOne({phone:this._update.phone}, function(err, userMongo){
-// 	// 		if (userMongo.createdAt==undefined){
-// 	// 			this.update({},{ $set: { updatedAt: new Date(), createdAt: new Date() } });
-// 	// 		}else {
-// 	// 			this.update({},{ $set: { updatedAt: new Date()} });
-// 	// 		}
-// 	// 	})
-// 	// }
-// });
 
 module.exports = mongoose.model('Users', userSchema);
