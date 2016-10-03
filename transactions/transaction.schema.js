@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 var transactionSchema = mongoose.Schema({
 	valueTotal: {type:Number, required:true},
 	valuePaid: {type:Number},
+	description: String,
 	creator:{ phone:{value:{type: String, required:true, ref: 'User'}}, name:{type:String}, registrationFlag:String},
 	status: String,
 	debtor: { phone:{value:{type: String, required:true, ref: 'User' }}, name:{type:String}, senderConfirm:Boolean, registrationFlag:String},

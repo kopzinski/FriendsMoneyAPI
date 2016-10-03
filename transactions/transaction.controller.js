@@ -9,6 +9,7 @@ module.exports = {
         var newTransaction = new Transaction({
             creator:req.body.creator,
             valueTotal: req.body.valueTotal,
+            description: req.body.description,
             status: req.body.status,
             debtor: req.body.debtor,
             creditor: req.body.creditor
