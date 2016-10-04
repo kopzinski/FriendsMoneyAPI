@@ -173,9 +173,7 @@ function getMemebersPartialBalanceByUser(idGroup, phoneUser){
             totalBalancesCreditor += members[i].totalBalance;
         }
         
-
         while(totalBalancesCreditor > 0){
-
             //Encontra o maior creditor 
              var biggerCreditor = 0;
              for (var i = 1; i < members.length; i++){
@@ -183,7 +181,7 @@ function getMemebersPartialBalanceByUser(idGroup, phoneUser){
                      biggerCreditor = i;
                  }
              }
-             
+ 
              //encontra todos os devedores 
              var debtors = [];
                 for (var i = 0; i < members.length; i++){
@@ -204,6 +202,7 @@ function getMemebersPartialBalanceByUser(idGroup, phoneUser){
                     newMembers[debtors[i]].individualBalance = creditorDividerBetweenDebtors.toFixed(2);
                     //verifica se quem chamou é o debtor
                 }else if(members[debtors[i]].phone.value == phoneUser){
+
                     //se sim o individual balance do creditor é igual ao totalBalance de quem chamou (negativo mesmo)
                     members[biggerCreditor].individualBalance = -creditorDividerBetweenDebtors.toFixed(2);
                 }
@@ -278,15 +277,12 @@ function getMembersByGroup(idGroup) {
 }
 
 function createGroup(group){
-    console.log("createGroup");
    var deferred = Q.defer();
    var newGroup = new Group(group);
    if(newGroup){
      async.map(newGroup.members, function(user, callback){
         userService.getUser(user.phone.value, function(response){
         if (response){
-            console.log(newGroup.creator);
-            console.log("if");
             user._id = response._id;
             user.name = response.name;
             user.phone.value = response.phone.value;
@@ -298,7 +294,6 @@ function createGroup(group){
             }
             return callback(null, user)
         }else {
-            console.log("else");
             userService.getValidNumberPhone(user.phone.value).then(function(validNumber){
             user.phone.value = "+"+validNumber;
             user.flagAccepted = false;  
@@ -308,7 +303,6 @@ function createGroup(group){
         }
     })
     },function(err, results){
-        console.log(results);
         newGroup.members = results;
         
         userService.getValidNumberPhone(newGroup.creator.phone.value).then(function(numberValid){ 
@@ -368,7 +362,6 @@ function acceptGroupInvitation (userPhone, id_group){
                     },
                     function(err, result){
                         group.members = result;
-                        console.log(group);
                         group.save(function(err){
                             if (err) deferred.reject(err);
                             else {
@@ -387,7 +380,6 @@ return deferred.promise;
 
 function denyGroupInvitation (userPhone, id_group){
      var deferred = Q.defer();
-     console.log("asd",userPhone);
     userService.getUser(userPhone, function(user){
          if(user) {
              Group.findById(id_group, function(err, group){
@@ -400,11 +392,9 @@ function denyGroupInvitation (userPhone, id_group){
                        var members =  (group.members).filter(function(member){
                         return member.phone.value != userPhone;
                        })
-                       console.log(members);
                        callback(members)
                     }],
                     function(result){
-                        console.log(result);
                         group.members = result;
                          group.save(function(err){
                             if (err) deferred.reject(err);
@@ -436,17 +426,33 @@ function deleteGroup(id, phone, callback){
                 if(group.members[i].phone.value == phone){
                     group.members[i].flagFinalized = true;
                 }else{
-                    group.members[i].flagFinalized = false;
-                }                  
+                    if(group.members[i].flagFinalized == true){
+                        group.members[i].flagFinalized == true;
+                    }else{
+                        group.members[i].flagFinalized = false;
+                    }
+                }             
+              }
+              var cont = 0;
+              for(var i = 0; i < group.members.length; i++){
+                if(group.members[i].flagFinalized == true){
+                    cont++;
+                }  
+              }
+              if(cont == group.members.length){
+                var date = new Date();
+                group.finalizedAt = date;   
               }
               group.save(function(err, success){
-                  if(err){
-                      logger.error(constant.error.msg_mongo_error+": "+err);
-                      callback({status: 500, error: err });
-                  }else{
-                      callback(success);
-                  }
+                if(err){
+                    logger.error(constant.error.msg_mongo_error+": "+err);
+                    callback({status: 500, error: err });
+                }else{
+                    callback(success);
+                }
               })
+              
+              
           }
       })
 }

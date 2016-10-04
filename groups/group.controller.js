@@ -29,7 +29,6 @@ module.exports = {
         }else {
             groupService.getGroupsByUser(phone).then(function(response){  
                 if (response){     
-                    console.log(response);
                     res.json(response);
                 }else {    
                     res.json({});
@@ -50,7 +49,6 @@ module.exports = {
         })
     },
     acceptGroupInvitation:function(req, res, next){
-        console.log(req.body);
         var userPhone = req.body.userPhone;
         var id_group = req.body.id_group;
 
@@ -62,7 +60,6 @@ module.exports = {
         })
     },
     denyGroupInvitation:function(req, res, next){
-        console.log(req.body);
         var userPhone = req.body.userPhone;
         var id_group = req.body.id_group;
 
@@ -75,14 +72,12 @@ module.exports = {
     },
     getTransactionsByGroup:function(req, res, next){
         var idGroup = req.params.idGroup;
-        console.log(req.params)
         if (typeof idGroup == 'undefined'){
             res.status(400).json(constant.error.msg_invalid_param);
         }else {
             groupService.getTransactionsByGroup(idGroup).then(function(transactions){
                 res.json(transactions);
             }).fail(function(err){
-                console.log(err);
                 res.status(404).json(err);
             })  
         }
@@ -101,10 +96,8 @@ module.exports = {
         }    
     },
     registerTransactionByGroup:function (req, res, next){
-        console.log(req.body);
        var idGroup = req.body.idGroup;
        var transaction = req.body.transaction;
-       console.log(idGroup);
        if (typeof idGroup == 'undefined' && typeof transaction == 'undefined'){
            res.status(400).json(constant.error.msg_invalid_param);
        }else {
