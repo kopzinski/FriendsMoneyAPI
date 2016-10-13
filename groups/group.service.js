@@ -158,68 +158,94 @@ function updatePaymentBalanceGroupByUser(idGroup) {
 // }
 
 
-function getMemebersPartialBalanceByUser(idGroup, phoneUser){
-    var deferred = Q.defer();
+
+
+// //ver o que cada um deve contribuir no grupo
+// 400 reais 10 pessoas 40 por pessoa
+
+// \
+
+// verificar porcentagem a receber dos positivos
+// exemplo: 40 pila por pessoa
+
+// cara 1 tem saldo de  240 a receber
+// cara 2 tem saldo de 60 a receber
+
+// 240 - 80%
+// 60 - 20%
+
+
+
+// -----------
+// descobre
+// se tiver negativo		
+// 	- 20 dividido proporcionalmente a cada credor (quem ta positivo), exceto eu mesmo
+
+// 10 pessoas no churrasco
+// 3 pagaram = 280 100 20 = 400
+// 7 nao pagaram
+
+// cada pessoa tem que pagar ainda 40 reais
+
+// pessoas a receber não entram na transação
+// pessoas a pagar entram na transação
+
+function getCreditorsAndDebtors (idGroup, callback){
     updatePaymentBalanceGroupByUser(idGroup).then(function(groupUpdate){
-
-        if (groupUpdate.transactions.length > 0){
-
-        var members = groupUpdate.members;
-        var totalBalancesCreditor = 0;
-        var newMembers = members;
-        
-        for (var i = 0; i < members.length; i++){
-        if(members[i].totalBalance > 0)
-            totalBalancesCreditor += members[i].totalBalance;
-        }
-        
-        while(totalBalancesCreditor > 0){
-            //Encontra o maior creditor 
-             var biggerCreditor = 0;
-             for (var i = 1; i < members.length; i++){
-                 if (members[biggerCreditor].totalBalance < members[i].totalBalance){
-                     biggerCreditor = i;
-                 }
-             }
- 
-             //encontra todos os devedores 
-             var debtors = [];
+            if (groupUpdate.transactions.length > 0){
+                var members = groupUpdate.members;
+                var totalBalancesCreditor = 0;
+                
                 for (var i = 0; i < members.length; i++){
+                if(members[i].totalBalance > 0)
+                    totalBalancesCreditor += members[i].totalBalance;
+                }
+                //encontra todos os credores 
+                var creditors = [];
+                var debtors = [];
+                for (var i = 0; i < members.length; i++){
+                    if(members[i].totalBalance > 0){
+                        creditors.push({
+                            phone: members[i].phone,
+                            totalBalance: members[i].totalBalance,
+                            percentReceive: (members[i].totalBalance/totalBalancesCreditor)*100,
+                            position:i
+                        });
+                    }
                     if (members[i].totalBalance < 0){
                         debtors.push(i);
+                    }  
+                }
+                callback(creditors, debtors, members, totalBalancesCreditor);
+            }else {
+                callback(null)
+            } 
+        })
+      
+}
+function getMemebersPartialBalanceByUser(idGroup, phoneUser){
+    var deferred = Q.defer(); 
+    getCreditorsAndDebtors(idGroup, function(creditors, debtors, members, totalBalancesCreditor){
+        if (members != null && creditors != null && debtors != null){
+            for (var i = 0; i < members.length; i++){
+                if (members[i].phone.value == phoneUser && members[i].totalBalance > 0){
+                    for (var j = 0; j < debtors.length; j++){
+                        members[debtors[j]].individualBalance = Math.abs(((((members[i].totalBalance/totalBalancesCreditor)*100)*members[debtors[j]].totalBalance)/100).toFixed(2));
+                        console.log(members[debtors[j]])
                     }
+                }else if (members[i].phone.value == phoneUser && members[i].totalBalance < 0){
+                    
+                    for (var j = 0; j < creditors.length; j++){
+                        members[creditors[j].position].individualBalance = (((creditors[j].percentReceive)*members[i].totalBalance)/100).toFixed(2);
+                    }    
                 }
-
-              var creditorDividerBetweenDebtors = members[biggerCreditor].totalBalance / debtors.length;
-             
-              for (var i = 0; i < debtors.length; i++){
-                members[biggerCreditor].totalBalance -= creditorDividerBetweenDebtors;
-                totalBalancesCreditor -= creditorDividerBetweenDebtors;
-                members[debtors[i]].totalBalance += creditorDividerBetweenDebtors;
-
-                 if (members[biggerCreditor].phone.value == phoneUser){
-                    //Se sim o balanço individual do devedor em relação a quem chamou a função é igual ao totalBalance do devedor * -1
-                    newMembers[debtors[i]].individualBalance = creditorDividerBetweenDebtors.toFixed(2);
-                    //verifica se quem chamou é o debtor
-                }else if(members[debtors[i]].phone.value == phoneUser){
-
-                    //se sim o individual balance do creditor é igual ao totalBalance de quem chamou (negativo mesmo)
-                    members[biggerCreditor].individualBalance = -creditorDividerBetweenDebtors.toFixed(2);
-                }
-              }
             }
-
-            deferred.resolve(newMembers);    
+             deferred.resolve(members);   
+        }else if(members != null) {
+             deferred.resolve(members);   
         }else {
-            getGroupById(idGroup).then(function(group){
-                deferred.resolve(group.members);
-            }).fail(function(err){
-                deferred.reject(err);
-            })
-        }
-    
-    }).fail(function(err){
-        deferred.reject(err);
+            deferred.resolve();
+        } 
     })
     return deferred.promise;
 }
