@@ -21,6 +21,7 @@ var service = {};
  service.addAtributteStatusPendencie = addAtributteStatusPendencie;
  service.getListGroupAcceptedPendencies = getListGroupAcceptedPendencies;
  service.getListGroupDeletedPendencies = getListGroupDeletedPendencies;
+ service.getListGroupTransactions = getListGroupTransactions;
 module.exports = service;
 
 function getListTransactionPendingStatus (phone){
@@ -135,3 +136,70 @@ function getListGroupAcceptedPendencies (phone){
     return deferred.promise;
 
 }
+
+function getListGroupAcceptedPendencies (phone){
+    var deferred = Q.defer();
+        Group.find({members: {$elemMatch:{"phone.value":phone, flagAccepted:false}}},function(err, groups){
+            if (err) 
+            {
+                logger.error(constant.error.msg_mongo_error+": "+err);
+                deferred.reject(err);
+            }else if (groups[0] == null || groups[0] == undefined)
+            {
+            
+                deferred.resolve(null);
+            }
+            else {
+                addAtributteStatusPendencie("createGroup",groups,function(groups){
+                    deferred.resolve(groups);  
+                })  
+            }
+        }).sort({createdAt : 1});
+    return deferred.promise;
+
+}
+
+function getListGroupTransactions (phone){
+    var deferred = Q.defer();
+    Group.find({transactions: {$elemMatch:{"creditor.phone.value":phone, flagFinalized:false}}},function(err, groups){
+        
+        if (err) 
+        {
+            logger.error(constant.error.msg_mongo_error+": "+err);
+            deferred.reject(err);
+        }else if (groups[0] == null || groups[0] == undefined)
+        {
+        
+            deferred.resolve();
+        }
+        else {
+            addAtributteStatusPendencie("finalizeTransaction",groups,function(groups){
+                deferred.resolve(groups);  
+            })  
+        }
+        
+    }).sort({createdAt : 1});
+    
+    return deferred.promise;
+}
+
+/*function getListGroupDeletedTransactions (phone){
+    var deferred = Q.defer();
+    Group.find({transactions: {$elemMatch:{"phone.value":phone, flagFinalized:false}}},function(err, groups){
+        if (err) 
+        {
+            logger.error(constant.error.msg_mongo_error+": "+err);
+            deferred.reject(err);
+        }else if (groups[0] == null || groups[0] == undefined)
+        {
+        
+            deferred.resolve();
+        }
+        else {
+            addAtributteStatusPendencie("finalizeTransaction",groups,function(groups){
+                deferred.resolve(groups);  
+            })  
+        }
+    }).sort({createdAt : 1});
+    return deferred.promise;
+}*/

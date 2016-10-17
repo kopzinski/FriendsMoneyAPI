@@ -12,7 +12,9 @@ module.exports = {
             description: req.body.description,
             status: req.body.status,
             debtor: req.body.debtor,
-            creditor: req.body.creditor
+            creditor: req.body.creditor,
+	        groupId: req.body.groupId
+            
         });
         if (typeof newTransaction.valueTotal  == 'undefined' ||  typeof newTransaction.status  == 'undefined' || typeof newTransaction.debtor == 'undefined'|| typeof newTransaction.creditor == "undefined") {
             res.json({status:400,  error: constant.error.msg_invalid_param});

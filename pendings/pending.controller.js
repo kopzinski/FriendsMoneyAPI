@@ -42,7 +42,7 @@ module.exports = {
                         },
                         function(transactionsPaymentConfirm, callback){
 
-                      pendingService.getListGroupAcceptedPendencies(user.phone.value).then(function(pendenciesGroupsCreated){
+                            pendingService.getListGroupAcceptedPendencies(user.phone.value).then(function(pendenciesGroupsCreated){
                                     if (transactionsPaymentConfirm && pendenciesGroupsCreated){
                                         callback(null, pendenciesGroupsCreated.concat(transactionsPaymentConfirm));
                                     }else if(pendenciesGroupsCreated){
@@ -54,26 +54,43 @@ module.exports = {
                                     }
                                     
                             }).fail(function(err){
-                                 callback(err, null); 
+                                callback(err, null); 
                             })
-                            },
+                        },
 
-                            function(pendenciesGroupsCreated, callback){
-   
-                                pendingService.getListGroupDeletedPendencies(user.phone.value).then(function(pendenciesGroupsDeleted){
-                                        if (pendenciesGroupsDeleted && pendenciesGroupsCreated){
-                                            callback(null, pendenciesGroupsDeleted.concat(pendenciesGroupsCreated));
-                                        }else if(pendenciesGroupsDeleted){
-                                            callback(null, pendenciesGroupsDeleted);
-                                        }else if(pendenciesGroupsCreated){
-                                            callback(null, pendenciesGroupsCreated);
-                                        }else {
-                                            callback(null, null);
-                                        }         
+                        function(pendenciesGroupsCreated, callback){
+                            pendingService.getListGroupDeletedPendencies(user.phone.value).then(function(pendenciesGroupsDeleted){
+                                    if (pendenciesGroupsDeleted && pendenciesGroupsCreated){
+                                        callback(null, pendenciesGroupsDeleted.concat(pendenciesGroupsCreated));
+                                    }else if(pendenciesGroupsDeleted){
+                                        callback(null, pendenciesGroupsDeleted);
+                                    }else if(pendenciesGroupsCreated){
+                                        callback(null, pendenciesGroupsCreated);
+                                    }else {
+                                        callback(null, null);
+                                    }         
                             }).fail(function(err){
-                                 callback(err, null); 
+                                    callback(err, null); 
                             })
-                               
+                                
+                        },
+
+                        function(pendenciesGroupsDeleted, callback){
+                            pendingService.getListGroupTransactions(user.phone.value).then(function(pendenciesGroupsDeletedTransactions){
+                                    if (pendenciesGroupsDeletedTransactions && pendenciesGroupsDeleted){
+                                        callback(null, pendenciesGroupsDeletedTransactions.concat(pendenciesGroupsDeleted));
+                                    }else if(pendenciesGroupsDeletedTransactions){
+                                        callback(null, pendenciesGroupsDeletedTransactions);
+                                    }else if(pendenciesGroupsDeleted){
+                                        callback(null, pendenciesGroupsDeleted);
+                                    }else {
+                                        callback(null, null);
+                                    }         
+                                    
+                            }).fail(function(err){
+                                    callback(err, null); 
+                            })
+                            
                         }
                     ], function (err, result) {
                     	if(err){

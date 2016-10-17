@@ -120,7 +120,46 @@ module.exports = {
                res.status(404).json(err);
            }) 
        }
+    },
+
+    deleteTransactionByGroup: function(req, res, next){
+      
+       var idGroup = req.params.idGroup;
+       var transaction = req.params.idTransaction;
+       var phoneCreator = req.params.phoneCreator;
+
+       if (typeof idGroup == 'undefined' && typeof transaction.valuePaid == 'undefined' && typeof transaction.description == 'undefined'){
+           res.status(400).json(constant.error.msg_invalid_param);
+       }else {
+           groupService.deleteTransactionByGroup(idGroup, transaction, phoneCreator).then(function(response){
+               res.json(response);
+           }).fail(function(err){
+               res.status(404).json(err);
+           }) 
+       }
+    },
+    
+
+    denyDeleteTransactionByGroup: function(req, res, next){
+       
+       
+       var idGroup = req.body.idGroup;
+       var transaction = req.body.idTransaction;
+
+       if (typeof idGroup == 'undefined'){
+           res.status(400).json(constant.error.msg_invalid_param);
+       }else {
+           groupService.denyDeleteTransactionByGroup(idGroup, transaction).then(function(response){
+               res.json(response);
+           }).fail(function(err){
+               res.status(404).json(err);
+           }) 
+       }
     }
+
+
+
+
 }
         
         

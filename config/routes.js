@@ -36,9 +36,12 @@ router.get('/groups/:phone', groupController.getGroupsByUser);
 router.delete('/group/:idgroup/:phone', groupController.deleteGroup);
 router.put('/group/accept', groupController.acceptGroupInvitation);
 router.put('/group/deny', groupController.denyGroupInvitation);
+router.put('/group/denyDeleteT', groupController.denyDeleteTransactionByGroup);
 router.get('/group/:idGroup/transactions', groupController.getTransactionsByGroup);
 router.post('/group/transaction',groupController.registerTransactionByGroup);
 router.put('/group/:idGroup/transaction',groupController.updateTransactionByGroup);
+router.delete('/group/deleteT/:idGroup/:idTransaction/:phoneCreator',groupController.deleteTransactionByGroup);
+//router.delete('/group/deleteTransaction/:idGroup/:idTransaction',groupController.sendPendencieDeleteTransaction);
 router.get('/group/:idGroup/user/:phone',groupController.getMembersByGroup);
 
 //Pendencies

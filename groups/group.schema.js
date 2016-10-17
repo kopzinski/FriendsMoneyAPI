@@ -21,7 +21,8 @@ var groupSchema = mongoose.Schema({
 		valuePaid: Number,
 		createdAt: Date,
 		updatedAt: Date,
-		creditor:{phone:{value:{type: String, required:true, ref: 'User' }}, name:{type:String}}
+		creditor:{phone:{value:{type: String, required:true, ref: 'User' }}, name:{type:String}},
+		flagFinalized: Boolean
 		}],
 	updatedAt:Date,
 	createdAt:Date,

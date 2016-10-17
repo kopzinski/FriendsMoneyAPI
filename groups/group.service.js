@@ -27,6 +27,8 @@ service.updateTransactionByGroup = updateTransactionByGroup;
 service.getGroupById = getGroupById;
 service.getMemebersBalanceByUser = getMemebersBalanceByUser;
 service.updatePaymentBalanceGroupByUser = updatePaymentBalanceGroupByUser;
+service.deleteTransactionByGroup = deleteTransactionByGroup;
+service.denyDeleteTransactionByGroup = denyDeleteTransactionByGroup;
 
 module.exports = service;
 
@@ -183,6 +185,8 @@ function updateTransactionByGroup(idGroup, transactionUpdated){
     })
     return deferred.promise;    
 }
+
+
 
 function getTransactionsByGroup(idGroup) {
     var deferred = Q.defer();
@@ -390,11 +394,77 @@ function deleteGroup(id, phone, callback){
                     callback(success);
                 }
               })
-              
-              
           }
       })
-}
+    }
+
+    function deleteTransactionByGroup(idGroup, transactionUpdated, phoneCreator){
+        console.log(phoneCreator);
+        var deferred = Q.defer();
+        getGroupById(idGroup).then(function(group){        
+            for (var i = 0; i < group.transactions.length; i++){           
+                if (group.transactions[i]._id == transactionUpdated){ 
+                    console.log(group.transactions[i].creditor.phone.value);
+                    if(group.transactions[i].creditor.phone.value == phoneCreator){
+                        group.transactions.splice(i,1); 
+                    }else{
+                        group.transactions[i].flagFinalized = false;
+                        var date = new Date();
+                        group.updatedAt = date;
+                    }
+                     
+                }else if (i == group.transactions.length){
+                    deferred.reject(constant.error.msg_find_failure_transaction);
+                }
+            }
+            group.save(function(err){
+                if (err){
+                    deferred.reject(err);
+                }else {
+                    deferred.resolve(constant.success.msg_reg_transaction_success);
+                }
+            })
+            
+        }).fail(function(err){
+            deferred.reject(err);
+        })
+        return deferred.promise;    
+    }
+
+
+    function denyDeleteTransactionByGroup(idGroup, transactionUpdated){
+        
+        var deferred = Q.defer();
+        getGroupById(idGroup).then(function(group){      
+            var newGroup = group;  
+            for (var i = 0; i < group.transactions.length; i++){           
+                if (group.transactions[i]._id == transactionUpdated){                     
+                    group.transactions[i].flagFinalized = true;
+                    // delete newGroup.transactions[i]['flagFinalized'];
+                    // group.transactions[i].flagFinalized.splice(i,1); 
+                    var date = new Date();
+                    group.updatedAt = date;                     
+                }else if (i == group.transactions.length){
+                    deferred.reject(constant.error.msg_find_failure_transaction);
+                }
+            }
+            group.save(function(err){
+                if (err){
+                    deferred.reject(err);
+                }else {
+                    deferred.resolve(constant.success.msg_reg_transaction_success);
+                }
+            })
+            
+        }).fail(function(err){
+            deferred.reject(err);
+        })
+        return deferred.promise;    
+    }
+
+
+
+
 
 function getGroupById(idGroup){
     var deferred = Q.defer();
