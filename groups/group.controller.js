@@ -20,6 +20,7 @@ module.exports = {
             })
         }
     },
+    
     getGroupsByUser:function (req, res, next) {
         var phone = req.params.phone;
         
@@ -35,7 +36,6 @@ module.exports = {
             })
         }
     },
-
 
     deleteGroup:function (req, res, next) {
         var id = req.params.idgroup;
@@ -88,7 +88,7 @@ module.exports = {
         if (typeof idGroup == 'undefined'){
             res.status(400).json(constant.error.msg_invalid_param);
         }else {
-            groupService.getMemebersBalanceByUser(idGroup, phone).then(function(members){
+            groupService.getMemebersPartialBalanceByUser(idGroup, phone).then(function(members){
                 res.json(members);                
             }).fail(function(err){
                 res.status(404).json(err);
