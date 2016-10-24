@@ -37,10 +37,10 @@ module.exports = {
         }
     },
 
-    deleteGroup:function (req, res, next) {
+    acceptDeleteGroup:function (req, res, next) {
         var id = req.params.idgroup;
         var phone = req.params.phone;
-        groupService.deleteGroup(id, phone , function(response){  
+        groupService.acceptDeleteGroup(id, phone , function(response){  
             if (response){     
                 res.json(response);
             }else {    
@@ -48,6 +48,20 @@ module.exports = {
             }
         })
     },
+
+    denyDeleteGroup:function (req, res, next) {
+        console.log(req.params);
+        var id = req.params.idgroup;
+        console.log(id);        
+        groupService.denyDeleteGroup(id, function(response){  
+            if (response){     
+                res.json(response);
+            }else {    
+                res.json({});
+            }
+        })
+    },
+
     acceptGroupInvitation:function(req, res, next){
         var userPhone = req.body.userPhone;
         var id_group = req.body.id_group;

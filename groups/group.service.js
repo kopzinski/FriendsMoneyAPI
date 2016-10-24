@@ -17,7 +17,8 @@ var service = {};
 
 service.createGroup = createGroup;
 service.getGroupsByUser = getGroupsByUser;
-service.deleteGroup = deleteGroup;
+service.acceptDeleteGroup = acceptDeleteGroup;
+service.denyDeleteGroup = denyDeleteGroup;
 service.acceptGroupInvitation = acceptGroupInvitation;
 service.denyGroupInvitation = denyGroupInvitation;
 service.getTransactionsByGroup = getTransactionsByGroup;
@@ -444,7 +445,7 @@ function denyGroupInvitation (userPhone, id_group){
 }
 
 
-function deleteGroup(id, phone, callback){
+    function acceptDeleteGroup(id, phone, callback){
       Group.findById(id, function(err, group){
           if (err){
               logger.error(constant.error.msg_mongo_error+": "+err);
@@ -473,6 +474,32 @@ function deleteGroup(id, phone, callback){
                 var date = new Date();
                 group.finalizedAt = date;   
               }
+              group.save(function(err, success){
+                if(err){
+                    logger.error(constant.error.msg_mongo_error+": "+err);
+                    callback({status: 500, error: err });
+                }else{
+                    callback(success);
+                }
+              })
+          }
+      })
+    }
+
+    function denyDeleteGroup(id, callback){
+        console.log(id);
+      Group.findById(id, function(err, group){
+          if (err){
+              logger.error(constant.error.msg_mongo_error+": "+err);
+              callback({status: 500, error: err });
+          }else if(group == null || group == undefined) {
+              callback({status:404, error: constant.error.msg_no_register});
+          }else{
+              for(var i = 0; i < group.members.length; i++){
+                  if(group.members[i].flagFinalized == true || group.members[i].flagFinalized == false){
+                      group.members[i].flagFinalized = undefined;                      
+                  }            
+              }            
               group.save(function(err, success){
                 if(err){
                     logger.error(constant.error.msg_mongo_error+": "+err);

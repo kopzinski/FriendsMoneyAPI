@@ -33,7 +33,8 @@ router.post('/transaction', transactionController.createTransaction);
 //Groups
 router.post('/group', groupController.createGroup);
 router.get('/groups/:phone', groupController.getGroupsByUser);
-router.delete('/group/:idgroup/:phone', groupController.deleteGroup);
+router.delete('/group/:idgroup/:phone', groupController.acceptDeleteGroup);
+router.delete('/groupDeny/:idgroup', groupController.denyDeleteGroup);
 router.put('/group/accept', groupController.acceptGroupInvitation);
 router.put('/group/deny', groupController.denyGroupInvitation);
 router.put('/group/denyDeleteT', groupController.denyDeleteTransactionByGroup);
