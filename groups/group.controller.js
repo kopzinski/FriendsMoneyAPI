@@ -88,11 +88,26 @@ module.exports = {
         if (typeof idGroup == 'undefined'){
             res.status(400).json(constant.error.msg_invalid_param);
         }else {
-            groupService.getMemebersPartialBalanceByUser(idGroup, phone).then(function(members){
-                res.json(members);                
-            }).fail(function(err){
-                res.status(404).json(err);
-            })  
+            groupService.getGroupById(idGroup).then(function(group){
+                if (group){
+                    if (group.mode == "fairMode"){
+                        groupService.getMemebersPartialBalanceByUserModeFair(idGroup, phone).then(function(members){
+                            res.json(members);                
+                        }).fail(function(err){
+                            res.status(404).json(err);
+                        })  
+                    }else {
+                        groupService.getMemebersPartialBalanceByUserModeUnfair(idGroup, phone).then(function(members){
+                            res.json(members);                
+                        }).fail(function(err){
+                            res.status(404).json(err);
+                        })  
+                    }
+                }else {
+                     res.status(400).json("Grupo Não Existe");
+                }
+            })   
+            
         }    
     },
     registerTransactionByGroup:function (req, res, next){

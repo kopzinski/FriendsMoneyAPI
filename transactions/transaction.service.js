@@ -46,6 +46,7 @@ function createTransaction(transaction, callback){
 
         })
 	}
+
     newTransaction.save(function(err, transaction){
         if (err){callback({status:500, error: err });}
         else{
