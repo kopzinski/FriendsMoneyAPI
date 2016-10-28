@@ -42,7 +42,6 @@ function registerTransactionByGroup(idGroup, transaction){
             if (err){
                 deferred.reject(err);
             }else {
-                updatePaymentBalanceGroupByUser(idGroup);
                 deferred.resolve(constant.success.msg_reg_transaction_success);
             }
         })
@@ -174,6 +173,7 @@ function getCreditorsAndDebtors (idGroup, callback){
                 //encontra todos os credores 
                 var creditors = [];
                 var debtors = [];
+
                 for (var i = 0; i < members.length; i++){
                     if(members[i].totalBalance > 0){
                         creditors.push({
@@ -190,15 +190,18 @@ function getCreditorsAndDebtors (idGroup, callback){
 
                 callback(creditors, debtors,totalBalancesCreditor, groupUpdate);
             }else {
-                callback(null)
+                callback(null, null, null, groupUpdate);
             } 
         })    
 }
 function generateTransactionsAfterCloseGroupModeUnfair(idGroup){
     var deferred = Q.defer();
+    
     getCreditorsAndDebtors(idGroup, function(creditors, debtors,totalBalancesCreditor, groupUpdate){
+        var members = groupUpdate.members;
         if (creditors.length > 0 && debtors.length > 0) {
             while(totalBalancesCreditor > 0){
+                
                 var biggerCreditor = 0;
                 for (var i = 1; i < members.length; i++){
                     if (members[biggerCreditor].totalBalance < members[i].totalBalance){
@@ -212,7 +215,7 @@ function generateTransactionsAfterCloseGroupModeUnfair(idGroup){
                         biggerDebtor = i;
                     }
                 }
-
+                
                 if (members[biggerCreditor].totalBalance >= Math.abs(members[biggerDebtor].totalBalance)){
                       members[biggerCreditor].totalBalance -= Math.abs(members[biggerDebtor].totalBalance);
                       totalBalancesCreditor -= Math.abs(members[biggerDebtor].totalBalance);
@@ -234,7 +237,7 @@ function generateTransactionsAfterCloseGroupModeUnfair(idGroup){
                        }
                        
                        var transaction = {
-                           valueTotal:balance,
+                           valueTotal:balance.toFixed(2),
                            description: "Transação criada no grupo "+ groupUpdate.title,
                            status : "accepted",
                            debtor: debtor,
@@ -259,13 +262,14 @@ function generateTransactionsAfterCloseGroupModeUnfair(idGroup){
                        }
                        
                        var transaction = {
-                           valueTotal:balance,
+                           valueTotal:balance.toFixed(2),
                            description: "Transação criada no grupo "+ groupUpdate.title,
                            status : "accepted",
                            debtor: debtor,
                            creditor: creditor
                        }
                 }
+                console.log("transação");
                 transactionService.createTransaction(transaction, function(response){
                           console.log(response);
                       });
@@ -321,11 +325,16 @@ function generateTransactionsAfterCloseGroupModeFair(idGroup){
     })
 }
 function getMemebersPartialBalanceByUserModeUnfair(idGroup, phoneUser){
+
 var deferred = Q.defer(); 
     getCreditorsAndDebtors(idGroup, function(creditors, debtors, totalBalancesCreditor, groupUpdate){
+        console.log("teste");
         var members = groupUpdate.members;
-        if (members != null && creditors != null && debtors != null){
-            while(totalBalancesCreditor > 0){                 
+        if (groupUpdate.transactions.length == 0){
+            deferred.resolve(members);
+        }else if (members != null && creditors != null && debtors != null){
+            while(totalBalancesCreditor > 0){
+                                
                 //encontra maior credor
                 var biggerCreditor = 0;
                 for (var i = 1; i < members.length; i++){
@@ -333,6 +342,7 @@ var deferred = Q.defer();
                         biggerCreditor = i;
                     }
                 } 
+                console.log("achou o biggercreditor",biggerCreditor); 
                 //encontra maior devedor
                 var biggerDebtor = 0;
                 for (var i = 1; i < members.length; i++){
@@ -340,6 +350,7 @@ var deferred = Q.defer();
                         biggerDebtor = i;
                     }
                 }
+               
                 if (members[biggerCreditor].totalBalance >= Math.abs(members[biggerDebtor].totalBalance)){
                         members[biggerCreditor].totalBalance -= Math.abs(members[biggerDebtor].totalBalance);
                         //diminui a variável de parada pelo balanço total do devedor *-1 pra ficar positivo
@@ -351,15 +362,19 @@ var deferred = Q.defer();
                         //verifica se quem chamou a função é o credor
                         if (members[biggerCreditor].phone.value == phoneUser){
                             console.log("Entrei no if sendo creditor1")
+                            
                             //Se sim o balanço individual do devedor em relação a quem chamou a função é igual ao totalBalance do devedor * -1
-                            newMembers[biggerDebtor].individualBalance = balance;
+                          
+                            members[biggerDebtor].individualBalance = balance;
+                            
                             //verifica se quem chamou é o debtor
                         }else if(members[biggerDebtor].phone.value == phoneUser){
                             console.log("Entrei no if sendo debtor")
                             //se sim o individual balance do creditor é igual ao totalBalance de quem chamou (negativo mesmo)
-                            newMembers[biggerCreditor].individualBalance = -balance;
+                            members[biggerCreditor].individualBalance = -balance;
 
                         }
+                        
                     //se o debtor for maior que o creditor
                     }else {
                         totalBalancesCreditor -= Math.abs(members[biggerCreditor].totalBalance);
@@ -370,16 +385,20 @@ var deferred = Q.defer();
                         if (members[biggerCreditor].phone.value == phoneUser){
                             console.log("Entrei no if sendo creditor2")
                             //Se sim o balanço individual do devedor em relação a quem chamou a função é igual ao totalBalance do devedor * -1
-                            newMembers[biggerDebtor].individualBalance  = balance;
+                            members[biggerDebtor].individualBalance  = balance;
                         //verifica se quem chamou é o debtor
                         }else if(members[biggerDebtor].phone.value == phoneUser){
                             console.log("Entrei no if sendo debtor")
                             //se sim o individual balance do creditor é igual ao totalBalance de quem chamou (negativo mesmo)
-                            newMembers[biggerCreditor].individualBalance = -balance;
+                            members[biggerCreditor].individualBalance = -balance;
                         }
-                    }    
+                    }
+                    console.log(totalBalancesCreditor);    
             }
-            deferred.resolve(newMembers);   
+            console.log(members)
+            deferred.resolve(members);   
+        }else {
+            deferred.resolve(groupUpdate.members)
         }
     })
     return deferred.promise; 
@@ -388,12 +407,16 @@ function getMemebersPartialBalanceByUserModeFair(idGroup, phoneUser){
     var deferred = Q.defer(); 
     getCreditorsAndDebtors(idGroup, function(creditors, debtors, totalBalancesCreditor, groupUpdate){
         var members = groupUpdate.members;
+        // console.log("Creditors", creditors);
+        // console.log("debtors", debtors);
+        // console.log("totalBalancesCreditor",totalBalancesCreditor);
+        // console.log("groupUpdate",groupUpdate);
         if (members != null && creditors != null && debtors != null){
             for (var i = 0; i < members.length; i++){
                 if (members[i].phone.value == phoneUser && members[i].totalBalance > 0){
                     for (var j = 0; j < debtors.length; j++){
                         members[debtors[j]].individualBalance = Math.abs(((((members[i].totalBalance/totalBalancesCreditor)*100)*members[debtors[j]].totalBalance)/100).toFixed(2));
-                        console.log(members[debtors[j]])
+
                     }
                 }else if (members[i].phone.value == phoneUser && members[i].totalBalance < 0){
                     
@@ -492,7 +515,7 @@ function createGroup(group){
     })
     },function(err, results){
         newGroup.members = results;
-        
+        console.log(newGroup.creator);
         userService.getValidNumberPhone(newGroup.creator.phone.value).then(function(numberValid){ 
                 newGroup.creator.phone.value = "+"+numberValid;
                 newGroup.save(function(err){

@@ -8,7 +8,9 @@ module.exports = {
         var newGroup = ({
             creator:req.body.creator,
             members:req.body.members,
-            title:req.body.title
+            title:req.body.title,
+            description:req.body.description,
+            mode:req.body.mode
         })
         if (typeof newGroup.creator == 'undefined' || newGroup.members.length == 0 || typeof newGroup.title == 'undefined'){
             res.status(400).json({error: constant.error.msg_invalid_param});
@@ -98,6 +100,7 @@ module.exports = {
                         })  
                     }else {
                         groupService.getMemebersPartialBalanceByUserModeUnfair(idGroup, phone).then(function(members){
+                            console.log("membr",members)
                             res.json(members);                
                         }).fail(function(err){
                             res.status(404).json(err);
