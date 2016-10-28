@@ -6,6 +6,8 @@ var mongoose = require('mongoose');
 
 var groupSchema = mongoose.Schema({
     title:{type:String, required:true},
+	description:String,
+	mode:String,
     members:[{
 		name:String,
 		phone:{value:{type: String, required:true, ref: 'User' }},
