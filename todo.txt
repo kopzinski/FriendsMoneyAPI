@@ -1,0 +1,3 @@
+- Test on DigitalOcean
+- Write good docs about operations
+- Bring all business rules to API
