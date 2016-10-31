@@ -632,8 +632,8 @@ function denyGroupInvitation (userPhone, id_group){
 
 
 
-    function acceptDeleteGroup(id, phone, callback){
-
+    function acceptDeleteGroup(idGroup, phone, callback){
+        getGroupById(idGroup).then(function(group){
               for(var i = 0; i < group.members.length; i++){
                 if(group.members[i].phone.value == phone){
                     group.members[i].flagFinalized = true;
@@ -668,7 +668,8 @@ function denyGroupInvitation (userPhone, id_group){
                     callback({status: 500, error: err });
                 }else{
                     callback(success);
-                } 
+                }
+              }) 
       
       }).fail(function(err){
               logger.error(constant.error.msg_mongo_error+": "+err);
